@@ -86,7 +86,7 @@
                 </div>
                 <div>
                     <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-                        Kaizen Flow <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">v1.0</span>
+                        Kaizen Flow <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">v1.1</span>
                     </h1>
                     <p class="text-xs text-slate-400" id="current-date-display">Cargando fecha...</p>
                 </div>
@@ -107,7 +107,7 @@
         <!-- Navigation Tabs (Desktop) -->
         <nav class="hidden md:flex gap-2 p-1 bg-slate-900 rounded-xl border border-slate-800/80 mb-6">
             <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="nav-tab-btn flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 bg-emerald-500 text-slate-950 shadow-md">
-                <i class="fa-solid fa-house text-base"></i> Dashboard Diario
+                <i class="fa-solid fa-house text-base"></i> Inicio
             </button>
             <button onclick="switchTab('victories')" id="tab-btn-victories" class="nav-tab-btn flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
                 <i class="fa-solid fa-trophy text-base"></i> Log de Victorias
@@ -123,7 +123,7 @@
         <!-- Content Area -->
         <main class="flex-1 flex flex-col">
 
-            <!-- TAB 1: DASHBOARD DIARIO -->
+            <!-- TAB 1: INICIO -->
             <section id="view-dashboard" class="space-y-6">
                 <!-- Daily Progress Overview Card -->
                 <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-xl relative overflow-hidden">
@@ -316,7 +316,7 @@
         <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 px-3 py-2 flex justify-around items-center z-40 shadow-2xl">
             <button onclick="switchTab('dashboard')" id="mobile-tab-btn-dashboard" class="flex flex-col items-center gap-1 text-emerald-400 py-1">
                 <i class="fa-solid fa-house text-lg"></i>
-                <span class="text-[10px] font-medium">Dashboard</span>
+                <span class="text-[10px] font-medium">Inicio</span>
             </button>
             <button onclick="switchTab('victories')" id="mobile-tab-btn-victories" class="flex flex-col items-center gap-1 text-slate-400 py-1">
                 <i class="fa-solid fa-trophy text-lg"></i>
@@ -375,9 +375,14 @@
                     </div>
                 </div>
 
-                <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeHabitModal()" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl text-xs font-medium hover:bg-slate-700">Cancelar</button>
-                    <button type="submit" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl text-xs font-bold">Guardar Rutina</button>
+                <div class="flex justify-between items-center pt-2">
+                    <button type="button" id="btn-delete-habit" onclick="deleteCurrentHabit()" class="px-3 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-xl text-xs font-medium hidden">
+                        <i class="fa-solid fa-trash mr-1"></i> Eliminar
+                    </button>
+                    <div class="flex gap-2 ml-auto">
+                        <button type="button" onclick="closeHabitModal()" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl text-xs font-medium hover:bg-slate-700">Cancelar</button>
+                        <button type="submit" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl text-xs font-bold">Guardar Rutina</button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -549,7 +554,12 @@
                                     <i class="fa-solid ${isDone ? 'fa-check' : 'fa-minus'} text-sm"></i>
                                 </button>
                                 <div>
-                                    <span class="text-sm font-medium ${isDone ? 'line-through text-slate-500' : 'text-slate-100'}">${habit.title}</span>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-sm font-medium ${isDone ? 'line-through text-slate-500' : 'text-slate-100'}">${habit.title}</span>
+                                        <button onclick="openEditHabitModal('${habit.id}')" title="Editar rutina" class="text-slate-500 hover:text-emerald-400 text-xs px-1">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </button>
+                                    </div>
                                     ${habit.type === 'numeric' ? `<span class="block text-[11px] text-slate-400">Progreso: ${val} / ${habit.target}${habit.unit}</span>` : ''}
                                 </div>
                             </div>
@@ -842,18 +852,60 @@
             });
         }
 
-        function openAddHabitModal() {
-            document.getElementById('modal-habit-title').textContent = 'Nueva Micro-Rutina';
-            document.getElementById('habit-id').value = '';
-            document.getElementById('habit-title').value = '';
-
+        function populateCategoryOptions() {
             const select = document.getElementById('habit-category');
             select.innerHTML = '';
             appState.categories.forEach(c => {
                 select.innerHTML += `<option value="${c.id}">${c.name}</option>`;
             });
+        }
+
+        function openAddHabitModal() {
+            document.getElementById('modal-habit-title').textContent = 'Nueva Micro-Rutina';
+            document.getElementById('habit-id').value = '';
+            document.getElementById('habit-title').value = '';
+            document.getElementById('habit-type').value = 'boolean';
+            document.getElementById('habit-target').value = 10;
+            document.getElementById('habit-unit').value = 'min';
+            document.getElementById('btn-delete-habit').classList.add('hidden');
+
+            populateCategoryOptions();
+            toggleHabitTypeFields();
 
             document.getElementById('modal-habit').classList.remove('hidden');
+        }
+
+        function openEditHabitModal(habitId) {
+            const habit = appState.habits.find(h => h.id === habitId);
+            if (!habit) return;
+
+            document.getElementById('modal-habit-title').textContent = 'Editar Micro-Rutina';
+            document.getElementById('habit-id').value = habit.id;
+            document.getElementById('habit-title').value = habit.title;
+
+            populateCategoryOptions();
+            document.getElementById('habit-category').value = habit.categoryId;
+
+            document.getElementById('habit-type').value = habit.type || 'boolean';
+            document.getElementById('habit-target').value = habit.target || 10;
+            document.getElementById('habit-unit').value = habit.unit || 'min';
+            document.getElementById('btn-delete-habit').classList.remove('hidden');
+
+            toggleHabitTypeFields();
+
+            document.getElementById('modal-habit').classList.remove('hidden');
+        }
+
+        function deleteCurrentHabit() {
+            const habitId = document.getElementById('habit-id').value;
+            if (!habitId) return;
+
+            if (confirm('¿Estás seguro de eliminar esta micro-rutina?')) {
+                appState.habits = appState.habits.filter(h => h.id !== habitId);
+                saveState();
+                closeHabitModal();
+                renderDashboard();
+            }
         }
 
         function closeHabitModal() {
@@ -975,5 +1027,5 @@
             }
         }
     </script>
-</body>
+</body>                  
 </html>
