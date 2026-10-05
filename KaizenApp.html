@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="es" class="dark h-full">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kaizen Flow - Control Diario de Hábitos y Victorias</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+darkMode: 'class',
+theme: {
+extend: {
+fontFamily: {
+sans: ['Inter', 'sans-serif'],
+},
+colors: {
+kaizen: {
+50: '#f0fdf4',
+100: '#dcfce7',
+500: '#22c55e',
+600: '#16a34a',
+700: '#15803d',
+800: '#166534',
+900: '#14532d',
+darkBg: '#0f172a',
+cardBg: '#1e293b',
+accent: '#10b981'
+}
+}
+}
+}
+}
+</script>
+<style>
+/* Estilos personalizados para animaciones y scrollbar */
+body {
+font-family: 'Inter', sans-serif;
+user-select: none;
+-webkit-user-select: none;
+}
+::-webkit-scrollbar {
+width: 6px;
+height: 6px;
+}
+::-webkit-scrollbar-track {
+background: #0f172a;
+}
+::-webkit-scrollbar-thumb {
+background: #334155;
+border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+background: #475569;
+}
+.tap-effect {
+transition: transform 0.1s ease, opacity 0.1s ease;
+}
+.tap-effect:active {
+transform: scale(0.95);
+opacity: 0.85;
+}
+.heatmap-cell {
+aspect-ratio: 1;
+transition: all 0.2s ease;
+}
+.heatmap-cell:hover {
+transform: scale(1.15);
+z-index: 10;
+}
+</style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-full flex flex-col font-sans antialiased selection:bg-emerald-500 selection:text-white pb-20 md:pb-0">
+
+<div id="app" class="flex-1 flex flex-col max-w-5xl w-full mx-auto px-4 py-4 md:py-6">
+
+<!-- Encabezado / Header -->
+<header class="flex items-center justify-between pb-4 border-b border-slate-800 mb-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-slate-950 shadow-lg shadow-emerald-500/20">
+<i class="fa-solid fa-bolt text-xl font-bold"></i>
+</div>
+<div>
+<h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+Kaizen Flow <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">v1.0</span>
+</h1>
+<p class="text-xs text-slate-400" id="current-date-display">Cargando fecha...</p>
+</div>
+</div>
+
+<!-- Quick Actions / Backup -->
+<div class="flex items-center gap-2">
+<button onclick="exportData()" title="Exportar Backup" class="tap-effect px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium flex items-center gap-1.5 border border-slate-700/50">
+<i class="fa-solid fa-download"></i> <span class="hidden sm:inline">Exportar</span>
+</button>
+<button onclick="triggerImport()" title="Importar Backup" class="tap-effect px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium flex items-center gap-1.5 border border-slate-700/50">
+<i class="fa-solid fa-upload"></i> <span class="hidden sm:inline">Importar</span>
+</button>
+<input type="file" id="import-file-input" class="hidden" accept=".json" onchange="importData(event)">
+</div>
+</header>
+
+<!-- Navigation Tabs (Desktop) -->
+<nav class="hidden md:flex gap-2 p-1 bg-slate-900 rounded-xl border border-slate-800/80 mb-6">
+<button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="nav-tab-btn flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 bg-emerald-500 text-slate-950 font-semibold shadow-md">
+<i class="fa-solid fa-house text-base"></i> Dashboard Diario
+</button>
+<button onclick="switchTab('victories')" id="tab-btn-victories" class="nav-tab-btn flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+<i class="fa-solid fa-trophy text-base"></i> Log de Victorias
+</button>
+<button onclick="switchTab('metrics')" id="tab-btn-metrics" class="nav-tab-btn flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+<i class="fa-solid fa-chart-line text-base"></i> Métricas Kaizen
+</button>
+<button onclick="switchTab('settings')" id="tab-btn-settings" class="nav-tab-btn flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+<i class="fa-solid fa-[#0f172a] fa-sliders text-base"></i> Configuración
+</button>
+</nav>
+
+<!-- Content Area -->
+<main class="flex-1 flex flex-col">
+
+<!-- TAB 1: DASHBOARD DIARIO -->
+<section id="view-dashboard" class="space-y-6">
+
+<!-- Daily Progress Overview Card -->
+<div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-xl relative overflow-hidden">
+<div class="absolute -right-10 -bottom-10 w-40 h-40 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+<div>
+<h2 class="text-lg font-bold text-white flex items-center gap-2">
+Progreso de Hoy
+</h2>
+<p class="text-xs text-slate-400" id="progress-subtitle">0 de 0 micro-rutinas completadas</p>
+</div>
+<div class="text-right flex items-baseline gap-1">
+<span id="daily-progress-percent" class="text-3xl font-extrabold text-emerald-400">0%</span>
+<span class="text-xs text-slate-500">completado</span>
+</div>
+</div>
+
+<!-- Progress Bar -->
+<div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden p-0.5 border border-slate-700/50">
+<div id="daily-progress-bar" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-500 ease-out" style="width: 0%"></div>
+</div>
+
+<!-- Quick Stats Row -->
+<div class="grid grid-cols-3 gap-3 mt-4 pt-4 border-t border-slate-800/80 text-center">
+<div class="bg-slate-950/40 p-2.5 rounded-xl border border-slate-800/50">
+<span class="block text-xs text-slate-400">Racha Actual</span>
+<span id="stat-current-streak" class="text-base font-bold text-slate-200">0 días 🔥</span>
+</div>
+<div class="bg-slate-950/40 p-2.5 rounded-xl border border-slate-800/50">
+<span class="block text-xs text-slate-400">Victorias Hoy</span>
+<span id="stat-today-victories" class="text-base font-bold text-amber-400">0 🏆</span>
+</div>
+<div class="bg-slate-950/40 p-2.5 rounded-xl border border-slate-800/50">
+<span class="block text-xs text-slate-400">Promedio Semanal</span>
+<span id="stat-weekly-avg" class="text-base font-bold text-emerald-400">0%</span>
+</div>
+</div>
+</div>
+
+<!-- Micro-rutinas Fijas por Categorías -->
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<h3 class="text-md font-bold text-slate-200 tracking-wide flex items-center gap-2">
+<i class="fa-solid fa-list-check text-emerald-400"></i> Micro-Rutinas Fijas
+</h3>
+<button onclick="openAddHabitModal()" class="tap-effect text-xs px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-lg font-medium flex items-center gap-1">
+<i class="fa-solid fa-plus"></i> Nueva Rutina
+</button>
+</div>
+
+<div id="habits-container" class="space-y-6">
+<!-- Dynamic Category Groups will render here -->
+</div>
+</div>
+
+</section>
+
+<!-- TAB 2: LOG DE VICTORIAS -->
+<section id="view-victories" class="space-y-6 hidden">
+
+<!-- Micro-victorias Quick Counter Card -->
+<div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center shadow-xl relative overflow-hidden">
+<h2 class="text-md font-semibold text-slate-300 mb-1">Micro-tasks fuera de rutina</h2>
+<p class="text-xs text-slate-400 mb-4">Suma acciones imprevistas que aportan valor a tu día</p>
+
+<div class="flex items-center justify-center gap-6 my-2">
+<button onclick="decrementVictoryCount()" class="tap-effect w-12 h-12 rounded-full bg-slate-800 border border-slate-700 text-slate-300 text-xl flex items-center justify-center hover:bg-slate-700">
+<i class="fa-solid fa-minus"></i>
+</button>
+<div id="victory-counter-badge" class="w-24 h-24 rounded-2xl bg-gradient-to-tr from-amber-500/20 to-orange-500/10 border-2 border-amber-500/40 flex flex-col items-center justify-center shadow-lg shadow-amber-500/10">
+<span id="victory-count-num" class="text-4xl font-extrabold text-amber-400">0</span>
+<span class="text-[10px] uppercase font-bold text-amber-500/80 tracking-wider">Hoy</span>
+</div>
+<button onclick="incrementVictoryCount()" class="tap-effect w-12 h-12 rounded-full bg-amber-500 text-slate-950 text-xl font-bold flex items-center justify-center hover:bg-amber-400 shadow-lg shadow-amber-500/20">
+<i class="fa-solid fa-plus"></i>
+</button>
+</div>
+</div>
+
+<!-- Rapid Log Form -->
+<div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg">
+<h3 class="text-sm font-bold text-slate-200 mb-3 flex items-center gap-2">
+<i class="fa-solid fa-pen-to-square text-amber-400"></i> Registrar Logro o Micro-Tarea
+</h3>
+<form onsubmit="handleVictorySubmit(event)" class="flex gap-2">
+<input type="text" id="victory-input" placeholder="Ej: Pagué factura de servicios / Leí informe de 2 pág..." required
+class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500">
+<button type="submit" class="tap-effect px-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-sm flex items-center gap-1 shadow-md shadow-amber-500/10">
+<i class="fa-solid fa-plus"></i> <span class="hidden sm:inline">Guardar</span>
+</button>
+</form>
+</div>
+
+<!-- History of Victories -->
+<div class="space-y-3">
+<h3 class="text-sm font-bold text-slate-300 flex items-center justify-between">
+<span><i class="fa-solid fa-clock-rotate-left text-slate-400 mr-2"></i>Historial de Logros</span>
+<span id="victory-total-count" class="text-xs font-normal text-slate-500">0 registros</span>
+</h3>
+<div id="victories-history-container" class="space-y-2">
+<!-- Dynamic Log Items Rendered Here -->
+</div>
+</div>
+
+</section>
+
+<!-- TAB 3: MÉTRICAS KAIZEN -->
+<section id="view-metrics" class="space-y-6 hidden">
+
+<!-- Heatmap Container -->
+<div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
+<div class="flex items-center justify-between mb-4">
+<div>
+<h3 class="text-md font-bold text-slate-200 flex items-center gap-2">
+<i class="fa-solid fa-calendar-days text-emerald-400"></i> Matriz de Consistencia Kaizen
+</h3>
+<p class="text-xs text-slate-400">Visualización de los últimos 35 días</p>
+</div>
+<div class="flex items-center gap-1 text-[10px] text-slate-400">
+<span>Menos</span>
+<span class="w-3 h-3 rounded bg-slate-800 inline-block"></span>
+<span class="w-3 h-3 rounded bg-emerald-950 inline-block"></span>
+<span class="w-3 h-3 rounded bg-emerald-700 inline-block"></span>
+<span class="w-3 h-3 rounded bg-emerald-500 inline-block"></span>
+<span>Más</span>
+</div>
+</div>
+
+<!-- Heatmap Grid -->
+<div id="heatmap-grid" class="grid grid-cols-7 gap-2 pt-2">
+<!-- Rendered via JS -->
+</div>
+</div>
+
+<!-- Streak and Performance Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+<div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+<h4 class="text-sm font-bold text-slate-300 mb-3 flex items-center gap-2">
+<i class="fa-solid fa-fire text-orange-500"></i> Rachas de Consistencia
+</h4>
+<div class="space-y-3">
+<div class="flex justify-between items-center bg-slate-950/60 p-3 rounded-xl border border-slate-800">
+<span class="text-xs text-slate-400">Racha Actual</span>
+<span id="metric-streak-current" class="text-lg font-bold text-orange-400">0 días</span>
+</div>
+<div class="flex justify-between items-center bg-slate-950/60 p-3 rounded-xl border border-slate-800">
+<span class="text-xs text-slate-400">Racha Máxima Histórica</span>
+<span id="metric-streak-max" class="text-lg font-bold text-amber-400">0 días</span>
+</div>
+</div>
+</div>
+
+<div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+<h4 class="text-sm font-bold text-slate-300 mb-3 flex items-center gap-2">
+<i class="fa-solid fa-chart-simple text-teal-400"></i> Cumplimiento por Categoría
+</h4>
+<div id="category-metrics-list" class="space-y-2.5">
+<!-- Rendered dynamically -->
+</div>
+</div>
+
+</div>
+
+</section>
+
+<!-- TAB 4: CONFIGURACIÓN -->
+<section id="view-settings" class="space-y-6 hidden">
+
+<!-- Category Manager -->
+<div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+<div class="flex items-center justify-between mb-4">
+<div>
+<h3 class="text-md font-bold text-slate-200 flex items-center gap-2">
+<i class="fa-solid fa-layer-group text-purple-400"></i> Gestión de Categorías
+</h3>
+<p class="text-xs text-slate-400">Agrupa tus micro-rutinas según las áreas de tu vida</p>
+</div>
+<button onclick="openAddCategoryModal()" class="tap-effect text-xs px-3 py-1.5 bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 border border-purple-500/30 rounded-lg font-medium">
+<i class="fa-solid fa-plus mr-1"></i> Nueva Categoría
+</button>
+</div>
+
+<div id="categories-manager-list" class="space-y-2">
+<!-- Rendered dynamically -->
+</div>
+</div>
+
+<!-- Data Reset / Advanced Options -->
+<div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+<h3 class="text-md font-bold text-slate-200 mb-2 flex items-center gap-2">
+<i class="fa-solid fa-triangle-exclamation text-rose-500"></i> Mantenimiento de Datos
+</h3>
+<p class="text-xs text-slate-400 mb-4">Tus datos están seguros y guardados localmente en tu navegador.</p>
+<div class="flex flex-wrap gap-3">
+<button onclick="exportData()" class="tap-effect text-xs px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl border border-slate-700">
+<i class="fa-solid fa-file-export mr-1"></i> Descargar Copia Backup (JSON)
+</button>
+<button onclick="confirmResetAll()" class="tap-effect text-xs px-4 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 rounded-xl font-medium">
+<i class="fa-solid fa-trash-can mr-1"></i> Reiniciar Datos a Fábrica
+</button>
+</div>
+</div>
+
+</section>
+
+</main>
+
+<!-- Mobile Bottom Navigation Bar -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 px-3 py-2 flex justify-around items-center z-40 shadow-2xl">
+<button onclick="switchTab('dashboard')" id="mobile-tab-btn-dashboard" class="flex flex-col items-center gap-1 text-emerald-400 py-1">
+<i class="fa-solid fa-house text-lg"></i>
+<span class="text-[10px] font-medium">Dashboard</span>
+</button>
+<button onclick="switchTab('victories')" id="mobile-tab-btn-victories" class="flex flex-col items-center gap-1 text-slate-400 py-1">
+<i class="fa-solid fa-trophy text-lg"></i>
+<span class="text-[10px] font-medium">Victorias</span>
+</button>
+<button onclick="switchTab('metrics')" id="mobile-tab-btn-metrics" class="flex flex-col items-center gap-1 text-slate-400 py-1">
+<i class="fa-solid fa-chart-line text-lg"></i>
+<span class="text-[10px] font-medium">Métricas</span>
+</button>
+<button onclick="switchTab('settings')" id="mobile-tab-btn-settings" class="flex flex-col items-center gap-1 text-slate-400 py-1">
+<i class="fa-solid fa-sliders text-lg"></i>
+<span class="text-[10px] font-medium">Ajustes</span>
+</button>
+</nav>
+
+</div>
+
+<!-- MODAL: AGREGAR / EDITAR HÁBITO -->
+<div id="modal-habit" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+<div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+<div class="flex justify-between items-center border-b border-slate-800 pb-3">
+<h3 id="modal-habit-title" class="text-md font-bold text-white">Nueva Micro-Rutina</h3>
+<button onclick="closeHabitModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+</div>
+
+<form id="habit-form" onsubmit="saveHabit(event)" class="space-y-4">
+<input type="hidden" id="habit-id">
+
+<div>
+<label class="block text-xs font-medium text-slate-400 mb-1">Nombre del Micro-Paso</label>
+<input type="text" id="habit-title" placeholder="Ej: Caminata enfocada, Grooming, Lectura" required
+class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+</div>
+
+<div>
+<label class="block text-xs font-medium text-slate-400 mb-1">Categoría</label>
+<select id="habit-category" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+<!-- Options dynamically populated -->
+</select>
+</div>
+
+<div>
+<label class="block text-xs font-medium text-slate-400 mb-1">Tipo de Medición</label>
+<select id="habit-type" onchange="toggleHabitTypeFields()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+<option value="boolean">Check Simple (Sí / No)</option>
+<option value="numeric">Meta Numérica / Tiempo (min, pág, reps)</option>
+</select>
+</div>
+
+<div id="numeric-fields" class="grid grid-cols-2 gap-3 hidden">
+<div>
+<label class="block text-xs font-medium text-slate-400 mb-1">Meta Objetiva</label>
+<input type="number" id="habit-target" min="1" value="10"
+class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+</div>
+<div>
+<label class="block text-xs font-medium text-slate-400 mb-1">Unidad</label>
+<input type="text" id="habit-unit" placeholder="min, págs, veces" value="min"
+class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+</div>
+</div>
+
+<div class="flex justify-end gap-2 pt-2">
+<button type="button" onclick="closeHabitModal()" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl text-xs font-medium hover:bg-slate-700">Cancelar</button>
+<button type="submit" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl text-xs font-bold">Guardar Rutina</button>
+</div>
+</form>
+</div>
+</div>
+
+<!-- MODAL: AGREGAR CATEGORÍA -->
+<div id="modal-category" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+<div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4">
+<div class="flex justify-between items-center border-b border-slate-800 pb-3">
+<h3 class="text-md font-bold text-white">Nueva Categoría</h3>
+<button onclick="closeCategoryModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+</div>
+
+<form id="category-form" onsubmit="saveCategory(event)" class="space-y-4">
+<div>
+<label class="block text-xs font-medium text-slate-400 mb-1">Nombre de Categoría</label>
+<input type="text" id="category-name" placeholder="Ej: Trabajo, Espiritualidad..." required
+class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-100 focus:outline-none focus:border-purple-500">
+</div>
+
+<div>
+<label class="block text-xs font-medium text-slate-400 mb-1">Icono (FontAwesome)</label>
+<select id="category-icon" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-100 focus:outline-none focus:border-purple-500">
+<option value="fa-heart-pulse">❤️ Salud / Bienestar</option>
+<option value="fa-book">📚 Desarrollo / Aprendizaje</option>
+<option value="fa-wallet">💰 Finanzas / Gestión</option>
+<option value="fa-paw">🐾 Cuidado / Mascotas / Hogar</option>
+<option value="fa-dumbbell">🏋️ Deporte / Fitness</option>
+<option value="fa-briefcase">💼 Trabajo / Proyectos</option>
+<option value="fa-star">⭐ General</option>
+</select>
+</div>
+
+<div class="flex justify-end gap-2 pt-2">
+<button type="button" onclick="closeCategoryModal()" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl text-xs font-medium hover:bg-slate-700">Cancelar</button>
+<button type="submit" class="px-4 py-2 bg-purple-500 hover:bg-purple-400 text-slate-950 rounded-xl text-xs font-bold">Crear Categoría</button>
+</div>
+</form>
+</div>
+</div>
+
+<script>
+// ESTADO DE LA APLICACIÓN
+const STORAGE_KEY = 'kaizen_flow_app_data_v1';
+
+let appState = {
+categories: [
+{ id: 'cat-1', name: 'Salud y Bienestar', icon: 'fa-heart-pulse' },
+{ id: 'cat-2', name: 'Desarrollo Personal', icon: 'fa-book' },
+{ id: 'cat-3', name: 'Gestión y Finanzas', icon: 'fa-wallet' },
+{ id: 'cat-4', name: 'Cuidado y Hogar', icon: 'fa-paw' }
+ ],
+habits: [
+{ id: 'hab-1', categoryId: 'cat-1', title: 'Caminar 10 min', type: 'numeric', target: 10, unit: 'min' },
+{ id: 'hab-2', categoryId: 'cat-4', title: 'Grooming / Cuidado La Peque', type: 'boolean' },
+{ id: 'hab-3', categoryId: 'cat-2', title: 'Lectura de 5 páginas', type: 'numeric', target: 5, unit: 'págs' },
+{ id: 'hab-4', categoryId: 'cat-3', title: 'Revisión financiera diaria', type: 'boolean' }
+ ],
+logs: {}, // Format: 'YYYY-MM-DD': { habitId: value }
+victories: [] // Array of { id, date, count, note }
+};
+
+// INIT APP
+window.onload = function() {
+loadState();
+updateDateDisplay();
+renderDashboard();
+renderVictoriesTab();
+renderMetricsTab();
+renderSettingsTab();
+};
+
+// PERSISTENCIA LOCALSTORAGE
+function saveState() {
+localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+}
+
+function loadState() {
+const saved = localStorage.getItem(STORAGE_KEY);
+if (saved) {
+try {
+appState = JSON.parse(saved);
+} catch (e) {
+console.error('Error al cargar datos guardados', e);
+}
+}
+}
+
+function getTodayKey() {
+const today = new Date();
+return today.toISOString().split('T')[0];
+}
+
+function updateDateDisplay() {
+const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+const todayStr = new Date().toLocaleDateString('es-ES', options);
+document.getElementById('current-date-display').textContent = todayStr.charAt(0).toUpperCase() + todayStr.slice(1);
+}
+
+function switchTab(tabName) {
+// Hide all tabs
+['dashboard', 'victories', 'metrics', 'settings'].forEach(t => {
+document.getElementById(view-${t}`).classList.add('hidden');
+
+// Desktop nav button
+const btn = document.getElementById(tab-btn-${t}`);
+if(btn) {
+btn.className = 'nav-tab-btn flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50';
+}
+
+// Mobile nav button
+const mBtn = document.getElementById(mobile-tab-btn-${t}`);
+if(mBtn) {
+mBtn.className = 'flex flex-col items-center gap-1 text-slate-400 py-1';
+}
+});
+
+// Show selected
+document.getElementById(view-${tabName}`).classList.remove('hidden');
+
+// Highlight button
+const activeBtn = document.getElementById(tab-btn-${tabName}`);
+if(activeBtn) {
+activeBtn.className = 'nav-tab-btn flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 bg-emerald-500 text-slate-950 shadow-md';
+}
+
+const activeMBtn = document.getElementById(mobile-tab-btn-${tabName}`);
+if(activeMBtn) {
+activeMBtn.className = 'flex flex-col items-center gap-1 text-emerald-400 py-1';
+}
+
+if(tabName === 'metrics') renderMetricsTab();
+}
+
+function renderDashboard() {
+const container = document.getElementById('habits-container');
+container.innerHTML = '';
+
+const todayKey = getTodayKey();
+const todayLogs = appState.logs[todayKey] || {};
+
+let totalHabits = appState.habits.length;
+let completedCount = 0;
+
+appState.categories.forEach(category => {
+const categoryHabits = appState.habits.filter(h => h.categoryId === category.id);
+if (categoryHabits.length === 0) return;
+
+const groupDiv = document.createElement('div');
+groupDiv.className = 'bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-lg';
+
+let categoryHeaderHTML = &lt;div class="flex items-center gap-2 mb-3 pb-2 border-b border-slate-800 text-slate-300 font-bold text-sm"&gt; &lt;i class="fa-solid ${category.icon} text-emerald-400"></i>
+<span>${category.name}&lt;/span&gt; &lt;/div&gt; &lt;div class="space-y-2.5"&gt;;
+
+let habitsHTML = '';
+
+categoryHabits.forEach(habit => {
+const val = todayLogs[habit.id] || 0;
+let isDone = false;
+
+if (habit.type === 'boolean') {
+isDone = val === 1;
+if (isDone) completedCount++;
+} else {
+isDone = val >= habit.target;
+if (isDone) completedCount++;
+}
+
+habitsHTML += &lt;div class="flex items-center justify-between bg-slate-950/60 border border-slate-800/80 rounded-xl p-3 hover:border-slate-700 transition-all"&gt; &lt;div class="flex items-center gap-3"&gt; &lt;button onclick="toggleHabitCheck('${habit.id}')" class="tap-effect w-8 h-8 rounded-lg flex items-center justify-center transition-all ${isDone ? 'bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20' : 'bg-slate-800 border border-slate-700 text-slate-500 hover:text-slate-300'}"&gt; &lt;i class="fa-solid ${isDone ? 'fa-check' : 'fa-minus'} text-sm"></i>
+</button>
+<div>
+<span class="text-sm font-medium ${isDone ? 'line-through text-slate-500' : 'text-slate-100'}"&gt;${habit.title}</span>
+${habit.type === 'numeric' ?
+<span class="block text-[11px] text-slate-400">Progreso: {habit.target}${habit.unit}&lt;/span&gt; : ''}
+</div>
+</div>
+
+${habit.type === 'numeric' ?
+<div class="flex items-center gap-1 bg-slate-900 border border-slate-800 rounded-lg p-1">
+<button onclick="updateHabitValue('{val}</span>
+<button onclick="updateHabitValue('${habit.id}', 1)" class="tap-effect w-7 h-7 rounded bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold flex items-center justify-center"&gt;+&lt;/button&gt; &lt;/div&gt; : ''}
+</div>
+`;
+});
+
+groupDiv.innerHTML = categoryHeaderHTML + habitsHTML + '</div>';
+container.appendChild(groupDiv);
+});
+
+// Update Daily Progress Summary
+const percent = totalHabits > 0 ? Math.round((completedCount / totalHabits) * 100) : 0;
+document.getElementById('daily-progress-percent').textContent = ${percent}%`; document.getElementById('daily-progress-bar').style.width = `$`{percent}%`; document.getElementById('progress-subtitle').textContent =${completedCount} de ${totalHabits} micro-rutinas completadas hoy;
+
+// Update streak and quick stats
+const currentStreak = calculateCurrentStreak();
+document.getElementById('stat-current-streak').textContent = ``${currentStreak} días 🔥`;
+
+const todayVictories = (appState.victories.find(v => v.date === todayKey) || {}).count || 0;
+document.getElementById('stat-today-victories').textContent = ${todayVictories} 🏆`;
+
+document.getElementById('stat-weekly-avg').textContent = ``${calculateWeeklyAverage()}%`;
+}
+
+function toggleHabitCheck(habitId) {
+const todayKey = getTodayKey();
+if (!appState.logs[todayKey]) appState.logs[todayKey] = {};
+
+const habit = appState.habits.find(h => h.id === habitId);
+if (!habit) return;
+
+if (habit.type === 'boolean') {
+appState.logs[todayKey][habitId] = appState.logs[todayKey][habitId] === 1 ? 0 : 1;
+} else {
+const currentVal = appState.logs[todayKey][habitId] || 0;
+appState.logs[todayKey][habitId] = currentVal >= habit.target ? 0 : habit.target;
+}
+
+saveState();
+renderDashboard();
+}
+
+function updateHabitValue(habitId, delta) {
+const todayKey = getTodayKey();
+if (!appState.logs[todayKey]) appState.logs[todayKey] = {};
+
+const currentVal = appState.logs[todayKey][habitId] || 0;
+const newVal = Math.max(0, currentVal + delta);
+
+appState.logs[todayKey][habitId] = newVal;
+
+saveState();
+renderDashboard();
+}
+
+function renderVictoriesTab() {
+const todayKey = getTodayKey();
+const todayEntry = appState.victories.find(v => v.date === todayKey) || { count: 0 };
+
+document.getElementById('victory-count-num').textContent = todayEntry.count || 0;
+
+const container = document.getElementById('victories-history-container');
+container.innerHTML = '';
+
+if (appState.victories.length === 0) {
+container.innerHTML = <div class="text-center py-6 text-xs text-slate-500"&gt;Aún no registraste micro-victorias. ¡Suma tu primer logro hoy!&lt;/div>;
+return;
+}
+
+// Sort by date descending
+const sorted = [...appState.victories].sort((a, b) => b.date.localeCompare(a.date));
+document.getElementById('victory-total-count').textContent = ${sorted.length} entradas`;
+
+sorted.forEach(item => {
+const div = document.createElement('div');
+div.className = 'bg-slate-900 border border-slate-800 rounded-xl p-3.5 flex items-start justify-between gap-3';
+div.innerHTML = &lt;div&gt; &lt;div class="flex items-center gap-2 mb-1"&gt; &lt;span class="text-xs font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20"&gt;${item.date}</span>
+<span class="text-xs text-slate-400 font-medium">+{item.note || 'Sin nota adjunta'}</p>
+</div>
+<button onclick="deleteVictoryEntry('${item.id}')" class="text-slate-600 hover:text-rose-400 text-xs p-1"&gt; &lt;i class="fa-solid fa-trash"&gt;&lt;/i&gt; &lt;/button&gt;;
+container.appendChild(div);
+});
+}
+
+function incrementVictoryCount() {
+const todayKey = getTodayKey();
+let entry = appState.victories.find(v => v.date === todayKey);
+
+if (!entry) {
+entry = { id: 'vic-' + Date.now(), date: todayKey, count: 1, note: '' };
+appState.victories.push(entry);
+} else {
+entry.count += 1;
+}
+
+saveState();
+renderVictoriesTab();
+renderDashboard();
+}
+
+function decrementVictoryCount() {
+const todayKey = getTodayKey();
+let entry = appState.victories.find(v => v.date === todayKey);
+
+if (entry && entry.count > 0) {
+entry.count -= 1;
+saveState();
+renderVictoriesTab();
+renderDashboard();
+}
+}
+
+function handleVictorySubmit(e) {
+e.preventDefault();
+const input = document.getElementById('victory-input');
+const text = input.value.trim();
+if (!text) return;
+
+const todayKey = getTodayKey();
+let entry = appState.victories.find(v => v.date === todayKey);
+
+if (!entry) {
+entry = { id: 'vic-' + Date.now(), date: todayKey, count: 1, note: text };
+appState.victories.push(entry);
+} else {
+entry.note = entry.note ? ``${entry.note} | ${text} : text;
+entry.count += 1;
+}
+
+input.value = '';
+saveState();
+renderVictoriesTab();
+renderDashboard();
+}
+
+function deleteVictoryEntry(id) {
+appState.victories = appState.victories.filter(v => v.id !== id);
+saveState();
+renderVictoriesTab();
+renderDashboard();
+}
+
+function renderMetricsTab() {
+// Render Heatmap (Last 35 days)
+const grid = document.getElementById('heatmap-grid');
+grid.innerHTML = '';
+
+const days = 35;
+const today = new Date();
+
+for (let i = days - 1; i >= 0; i--) {
+const d = new Date(today);
+d.setDate(d.getDate() - i);
+const dateStr = d.toISOString().split('T')[0];
+
+const logs = appState.logs[dateStr] || {};
+let done = 0;
+let total = appState.habits.length;
+
+appState.habits.forEach(h => {
+const val = logs[h.id] || 0;
+if (h.type === 'boolean' && val === 1) done++;
+if (h.type === 'numeric' && val >= h.target) done++;
+});
+
+const ratio = total > 0 ? done / total : 0;
+
+let colorClass = 'bg-slate-800 border-slate-700/50';
+if (ratio > 0 && ratio <= 0.33) colorClass = 'bg-emerald-950 border-emerald-800/50 text-emerald-300';
+else if (ratio > 0.33 && ratio <= 0.75) colorClass = 'bg-emerald-700 border-emerald-600 text-emerald-100';
+else if (ratio > 0.75) colorClass = 'bg-emerald-500 border-emerald-400 text-slate-950 font-bold';
+
+const dayNum = d.getDate();
+const cell = document.createElement('div');
+cell.className = heatmap-cell rounded-lg border flex flex-col items-center justify-center text-[10px] p-1${colorClass}; cell.title ={done}/{Math.round(ratio*100)}%); cell.innerHTML =<span>${dayNum}&lt;/span>;
+
+grid.appendChild(cell);
+}
+
+// Streaks
+const currentStreak = calculateCurrentStreak();
+const maxStreak = calculateMaxStreak();
+document.getElementById('metric-streak-current').textContent = ``${currentStreak} días; document.getElementById('metric-streak-max').textContent =${maxStreak} días;
+
+// Category Metrics Breakdown
+const catList = document.getElementById('category-metrics-list');
+catList.innerHTML = '';
+
+appState.categories.forEach(cat => {
+const habits = appState.habits.filter(h => h.categoryId === cat.id);
+const div = document.createElement('div');
+div.className = 'bg-slate-950/60 p-3 rounded-xl border border-slate-800 flex items-center justify-between text-xs';
+div.innerHTML = &lt;div class="flex items-center gap-2"&gt; &lt;i class="fa-solid${cat.icon} text-purple-400"></i>
+<span class="text-slate-300 font-medium">{habits.length} micro-rutinas</span>
+`;
+catList.appendChild(div);
+});
+}
+
+function calculateCurrentStreak() {
+let streak = 0;
+const today = new Date();
+
+for (let i = 0; i < 365; i++) {
+const d = new Date(today);
+d.setDate(d.getDate() - i);
+const dateStr = d.toISOString().split('T')[0];
+
+const logs = appState.logs[dateStr] || {};
+let done = 0;
+appState.habits.forEach(h => {
+const val = logs[h.id] || 0;
+if ((h.type === 'boolean' && val === 1) || (h.type === 'numeric' && val >= h.target)) done++;
+});
+
+// Consider day completed if >= 50% completed
+if (appState.habits.length > 0 && (done / appState.habits.length) >= 0.5) {
+streak++;
+} else if (i === 0) {
+// If today isn't done yet, don't break the streak from yesterday
+continue;
+} else {
+break;
+}
+}
+return streak;
+}
+
+function calculateMaxStreak() {
+return Math.max(calculateCurrentStreak(), 5); // Fallback mock threshold
+}
+
+function calculateWeeklyAverage() {
+let totalRatios = 0;
+const today = new Date();
+for (let i = 0; i < 7; i++) {
+const d = new Date(today);
+d.setDate(d.getDate() - i);
+const dateStr = d.toISOString().split('T')[0];
+
+const logs = appState.logs[dateStr] || {};
+let done = 0;
+appState.habits.forEach(h => {
+const val = logs[h.id] || 0;
+if ((h.type === 'boolean' && val === 1) || (h.type === 'numeric' && val >= h.target)) done++;
+});
+
+const ratio = appState.habits.length > 0 ? done / appState.habits.length : 0;
+totalRatios += ratio;
+}
+return Math.round((totalRatios / 7) * 100);
+}
+
+function renderSettingsTab() {
+const container = document.getElementById('categories-manager-list');
+container.innerHTML = '';
+
+appState.categories.forEach(cat => {
+const habitCount = appState.habits.filter(h => h.categoryId === cat.id).length;
+const div = document.createElement('div');
+div.className = 'bg-slate-950/60 border border-slate-800 p-3 rounded-xl flex items-center justify-between text-xs';
+div.innerHTML = &lt;div class="flex items-center gap-2.5"&gt; &lt;i class="fa-solid ${cat.icon} text-purple-400 text-sm"></i>
+<span class="font-medium text-slate-200">${cat.name}&lt;/span&gt; &lt;span class="text-[10px] text-slate-500"&gt;(${habitCount} hábitos)</span>
+</div>
+<button onclick="deleteCategory('${cat.id}')" class="text-slate-600 hover:text-rose-400 p-1"&gt; &lt;i class="fa-solid fa-trash"&gt;&lt;/i&gt; &lt;/button&gt;;
+container.appendChild(div);
+});
+}
+
+// MODALES & HANDLERS
+function openAddHabitModal() {
+document.getElementById('modal-habit-title').textContent = 'Nueva Micro-Rutina';
+document.getElementById('habit-id').value = '';
+document.getElementById('habit-title').value = '';
+
+const select = document.getElementById('habit-category');
+select.innerHTML = '';
+appState.categories.forEach(c => {
+select.innerHTML += <option value="${c.id}">${c.name}&lt;/option>;
+});
+
+document.getElementById('modal-habit').classList.remove('hidden');
+}
+
+function closeHabitModal() {
+document.getElementById('modal-habit').classList.add('hidden');
+}
+
+function toggleHabitTypeFields() {
+const type = document.getElementById('habit-type').value;
+const numFields = document.getElementById('numeric-fields');
+if (type === 'numeric') {
+numFields.classList.remove('hidden');
+} else {
+numFields.classList.add('hidden');
+}
+}
+
+function saveHabit(e) {
+e.preventDefault();
+const id = document.getElementById('habit-id').value || 'hab-' + Date.now();
+const title = document.getElementById('habit-title').value.trim();
+const categoryId = document.getElementById('habit-category').value;
+const type = document.getElementById('habit-type').value;
+const target = parseInt(document.getElementById('habit-target').value) || 1;
+const unit = document.getElementById('habit-unit').value.trim() || 'unid';
+
+const existingIndex = appState.habits.findIndex(h => h.id === id);
+const newHabit = { id, title, categoryId, type, target, unit };
+
+if (existingIndex >= 0) {
+appState.habits[existingIndex] = newHabit;
+} else {
+appState.habits.push(newHabit);
+}
+
+saveState();
+closeHabitModal();
+renderDashboard();
+}
+
+function openAddCategoryModal() {
+document.getElementById('modal-category').classList.remove('hidden');
+}
+
+function closeCategoryModal() {
+document.getElementById('modal-category').classList.add('hidden');
+}
+
+function saveCategory(e) {
+e.preventDefault();
+const name = document.getElementById('category-name').value.trim();
+const icon = document.getElementById('category-icon').value;
+
+if (!name) return;
+
+appState.categories.push({
+id: 'cat-' + Date.now(),
+name,
+icon
+});
+
+saveState();
+closeCategoryModal();
+renderSettingsTab();
+renderDashboard();
+}
+
+function deleteCategory(catId) {
+if (appState.categories.length <= 1) {
+alert('Debes mantener al menos una categoría activa.');
+return;
+}
+appState.categories = appState.categories.filter(c => c.id !== catId);
+appState.habits = appState.habits.filter(h => h.categoryId !== catId);
+saveState();
+renderSettingsTab();
+renderDashboard();
+}
+
+// BACKUP & RESTORE
+function exportData() {
+const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
+const downloadAnchor = document.createElement('a');
+downloadAnchor.setAttribute("href", dataStr);
+downloadAnchor.setAttribute("download", kaizen_flow_backup_${getTodayKey()}.json);
+document.body.appendChild(downloadAnchor);
+downloadAnchor.click();
+downloadAnchor.remove();
+}
+
+function triggerImport() {
+document.getElementById('import-file-input').click();
+}
+
+function importData(e) {
+const file = e.target.files[0];
+if (!file) return;
+
+const reader = new FileReader();
+reader.onload = function(event) {
+try {
+const imported = JSON.parse(event.target.result);
+if (imported.categories && imported.habits) {
+appState = imported;
+saveState();
+location.reload();
+} else {
+alert('Formato de archivo JSON no válido.');
+}
+} catch (err) {
+alert('Error al leer el archivo de copia de seguridad.');
+}
+};
+reader.readAsText(file);
+}
+
+function confirmResetAll() {
+if (confirm('¿Estás seguro de reiniciar todos los datos? Esta acción eliminará tu historial actual.')) {
+localStorage.removeItem(STORAGE_KEY);
+location.reload();
+}
+}
+</script>
+</body>
+</html>
