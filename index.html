@@ -3,33 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kaizen Flow - Control Diario de Hábitos y Victorias</title>
+    <title>Kaizen Flow - Sistema Integral FSK</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
                         kaizen: {
-                            50: '#f0fdf4',
-                            100: '#dcfce7',
-                            500: '#22c55e',
-                            600: '#16a34a',
-                            700: '#15803d',
-                            800: '#166534',
-                            900: '#14532d',
-                            darkBg: '#0f172a',
-                            cardBg: '#1e293b',
+                            darkBg: '#0b1120',
+                            cardBg: '#151f32',
                             accent: '#10b981'
                         }
                     }
@@ -38,66 +29,41 @@
         }
     </script>
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0f172a;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 9999px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #475569;
-        }
-        .tap-effect {
-            transition: transform 0.1s ease, opacity 0.1s ease;
-        }
-        .tap-effect:active {
-            transform: scale(0.95);
-            opacity: 0.85;
-        }
-        .heatmap-cell {
-            aspect-ratio: 1;
-            transition: all 0.2s ease;
-        }
-        .heatmap-cell:hover {
-            transform: scale(1.15);
-            z-index: 10;
-        }
+        body { font-family: 'Inter', sans-serif; user-select: none; -webkit-user-select: none; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0b1120; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #334155; }
+        .tap-effect { transition: transform 0.1s ease, opacity 0.1s ease; }
+        .tap-effect:active { transform: scale(0.96); opacity: 0.85; }
+        .heatmap-cell { aspect-ratio: 1; transition: all 0.2s ease; }
+        .heatmap-cell:hover { transform: scale(1.15); z-index: 10; }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-full flex flex-col font-sans antialiased selection:bg-emerald-500 selection:text-white pb-20 md:pb-0">
+<body class="bg-slate-950 text-slate-100 min-h-full flex flex-col font-sans antialiased selection:bg-emerald-500 selection:text-white pb-24 md:pb-6">
 
-    <div id="app" class="flex-1 flex flex-col max-w-5xl w-full mx-auto px-4 py-4 md:py-6">
+    <div id="app" class="flex-1 flex flex-col max-w-6xl w-full mx-auto px-4 py-4 md:py-6">
 
-        <!-- Encabezado / Header -->
-        <header class="flex items-center justify-between pb-4 border-b border-slate-800 mb-6">
+        <!-- Header con Naming Definitivo -->
+        <header class="flex items-center justify-between pb-4 border-b border-slate-800/80 mb-6">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-slate-950 shadow-lg shadow-emerald-500/20">
-                    <i class="fa-solid fa-bolt text-xl font-bold"></i>
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-cyan-500 flex items-center justify-center text-slate-950 shadow-lg shadow-emerald-500/20">
+                    <i class="fa-solid fa-compass text-xl font-extrabold"></i>
                 </div>
                 <div>
                     <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-                        Kaizen Flow <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">v1.1</span>
+                        Kaizen Flow <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Sistema Integral FSK</span>
                     </h1>
                     <p class="text-xs text-slate-400" id="current-date-display">Cargando fecha...</p>
                 </div>
             </div>
 
-            <!-- Quick Actions / Backup -->
+            <!-- Global Actions -->
             <div class="flex items-center gap-2">
-                <button onclick="exportData()" title="Exportar Backup" class="tap-effect px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium flex items-center gap-1.5 border border-slate-700/50">
+                <button onclick="exportData()" title="Exportar Copia de Seguridad" class="tap-effect px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-medium flex items-center gap-1.5 border border-slate-800">
                     <i class="fa-solid fa-download"></i> <span class="hidden sm:inline">Exportar</span>
                 </button>
-                <button onclick="triggerImport()" title="Importar Backup" class="tap-effect px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium flex items-center gap-1.5 border border-slate-700/50">
+                <button onclick="triggerImport()" title="Importar Copia de Seguridad" class="tap-effect px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-medium flex items-center gap-1.5 border border-slate-800">
                     <i class="fa-solid fa-upload"></i> <span class="hidden sm:inline">Importar</span>
                 </button>
                 <input type="file" id="import-file-input" class="hidden" accept=".json" onchange="importData(event)">
@@ -105,91 +71,187 @@
         </header>
 
         <!-- Navigation Tabs (Desktop) -->
-        <nav class="hidden md:flex gap-2 p-1 bg-slate-900 rounded-xl border border-slate-800/80 mb-6">
-            <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="nav-tab-btn flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 bg-emerald-500 text-slate-950 shadow-md">
-                <i class="fa-solid fa-house text-base"></i> Inicio
+        <nav class="hidden md:flex gap-1.5 p-1.5 bg-slate-900/90 rounded-2xl border border-slate-800/80 mb-6 shadow-xl">
+            <button onclick="switchTab('foda')" id="tab-btn-foda" class="nav-tab-btn flex-1 py-2.5 px-3 rounded-xl text-xs font-medium transition-all duration-200 flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+                <i class="fa-solid fa-chess-board"></i> Módulo 1: Diagnóstico FODA
             </button>
-            <button onclick="switchTab('victories')" id="tab-btn-victories" class="nav-tab-btn flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
-                <i class="fa-solid fa-trophy text-base"></i> Log de Victorias
+            <button onclick="switchTab('smart')" id="tab-btn-smart" class="nav-tab-btn flex-1 py-2.5 px-3 rounded-xl text-xs font-medium transition-all duration-200 flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+                <i class="fa-solid fa-bullseye"></i> Módulo 2: Estructura y Enfoque SMART
             </button>
-            <button onclick="switchTab('metrics')" id="tab-btn-metrics" class="nav-tab-btn flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
-                <i class="fa-solid fa-chart-line text-base"></i> Métricas Kaizen
+            <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="nav-tab-btn flex-1 py-2.5 px-3 rounded-xl text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-2 bg-emerald-500 text-slate-950 shadow-md">
+                <i class="fa-solid fa-bolt"></i> Módulo 3: Crecimiento Continuo KAIZEN
             </button>
-            <button onclick="switchTab('settings')" id="tab-btn-settings" class="nav-tab-btn flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
-                <i class="fa-solid fa-sliders text-base"></i> Configuración
+            <button onclick="switchTab('victories')" id="tab-btn-victories" class="nav-tab-btn flex-1 py-2.5 px-3 rounded-xl text-xs font-medium transition-all duration-200 flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+                <i class="fa-solid fa-trophy"></i> Victorias
+            </button>
+            <button onclick="switchTab('metrics')" id="tab-btn-metrics" class="nav-tab-btn flex-1 py-2.5 px-3 rounded-xl text-xs font-medium transition-all duration-200 flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+                <i class="fa-solid fa-chart-line"></i> Métricas
+            </button>
+            <button onclick="switchTab('settings')" id="tab-btn-settings" class="nav-tab-btn flex-1 py-2.5 px-3 rounded-xl text-xs font-medium transition-all duration-200 flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+                <i class="fa-solid fa-layer-group"></i> Áreas / Ajustes
             </button>
         </nav>
 
-        <!-- Content Area -->
+        <!-- Main Content Area -->
         <main class="flex-1 flex flex-col">
 
-            <!-- TAB 1: INICIO -->
+            <!-- MÓDULO 1: DIAGNÓSTICO FODA -->
+            <section id="view-foda" class="space-y-6 hidden">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+                        <div>
+                            <h2 class="text-md font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-chess-board text-emerald-400"></i> Módulo 1: Diagnóstico FODA
+                            </h2>
+                            <p class="text-xs text-slate-400">Mapea tu realidad actual para diseñar metas coherentes con tu contexto.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Fortalezas -->
+                        <div class="bg-slate-950/70 border border-emerald-500/30 rounded-2xl p-4 relative">
+                            <div class="flex justify-between items-center mb-3 border-b border-emerald-500/20 pb-2">
+                                <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-2">
+                                    <i class="fa-solid fa-shield-halved"></i> Fortalezas (Interno)
+                                </h3>
+                                <button onclick="addFodaItem('strengths')" class="text-xs text-emerald-400 hover:text-emerald-300"><i class="fa-solid fa-plus"></i> Añadir</button>
+                            </div>
+                            <div id="foda-strengths-list" class="space-y-2"></div>
+                        </div>
+
+                        <!-- Oportunidades -->
+                        <div class="bg-slate-950/70 border border-cyan-500/30 rounded-2xl p-4">
+                            <div class="flex justify-between items-center mb-3 border-b border-cyan-500/20 pb-2">
+                                <h3 class="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-2">
+                                    <i class="fa-solid fa-door-open"></i> Oportunidades (Externo)
+                                </h3>
+                                <button onclick="addFodaItem('opportunities')" class="text-xs text-cyan-400 hover:text-cyan-300"><i class="fa-solid fa-plus"></i> Añadir</button>
+                            </div>
+                            <div id="foda-opportunities-list" class="space-y-2"></div>
+                        </div>
+
+                        <!-- Debilidades -->
+                        <div class="bg-slate-950/70 border border-amber-500/30 rounded-2xl p-4">
+                            <div class="flex justify-between items-center mb-3 border-b border-amber-500/20 pb-2">
+                                <h3 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
+                                    <i class="fa-solid fa-bug"></i> Debilidades (Interno)
+                                </h3>
+                                <button onclick="addFodaItem('weaknesses')" class="text-xs text-amber-400 hover:text-amber-300"><i class="fa-solid fa-plus"></i> Añadir</button>
+                            </div>
+                            <div id="foda-weaknesses-list" class="space-y-2"></div>
+                        </div>
+
+                        <!-- Amenazas -->
+                        <div class="bg-slate-950/70 border border-rose-500/30 rounded-2xl p-4">
+                            <div class="flex justify-between items-center mb-3 border-b border-rose-500/20 pb-2">
+                                <h3 class="text-xs font-bold uppercase tracking-wider text-rose-400 flex items-center gap-2">
+                                    <i class="fa-solid fa-triangle-exclamation"></i> Amenazas (Externo)
+                                </h3>
+                                <button onclick="addFodaItem('threats')" class="text-xs text-rose-400 hover:text-rose-300"><i class="fa-solid fa-plus"></i> Añadir</button>
+                            </div>
+                            <div id="foda-threats-list" class="space-y-2"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MÓDULO 2: ESTRUCTURA Y ENFOQUE SMART -->
+            <section id="view-smart" class="space-y-6 hidden">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-md font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-bullseye text-emerald-400"></i> Módulo 2: Estructura y Enfoque SMART
+                        </h2>
+                        <p class="text-xs text-slate-400">Conecta tus aspiraciones temporales con tus acciones diarias.</p>
+                    </div>
+                    <button onclick="openAddSmartModal()" class="tap-effect text-xs px-3.5 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl font-bold flex items-center gap-1.5 shadow-lg shadow-emerald-500/20">
+                        <i class="fa-solid fa-plus"></i> Nueva Meta
+                    </button>
+                </div>
+
+                <!-- Tabs Horizon Filter -->
+                <div class="grid grid-cols-3 gap-2 bg-slate-900 p-1.5 rounded-xl border border-slate-800">
+                    <button onclick="filterSmartHorizon('short')" id="smart-horizon-btn-short" class="py-2 text-xs font-bold rounded-lg bg-emerald-500 text-slate-950">
+                        Corto Plazo (1-3 meses)
+                    </button>
+                    <button onclick="filterSmartHorizon('medium')" id="smart-horizon-btn-medium" class="py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-slate-200">
+                        Mediano Plazo (3-12 meses)
+                    </button>
+                    <button onclick="filterSmartHorizon('long')" id="smart-horizon-btn-long" class="py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-slate-200">
+                        Largo Plazo (1-3 años)
+                    </button>
+                </div>
+
+                <div id="smart-goals-container" class="space-y-3">
+                    <!-- Dynamic SMART Goals -->
+                </div>
+            </section>
+
+            <!-- MÓDULO 3: CRECIMIENTO CONTINUO KAIZEN (INICIO Y DESPACHO DIARIO) -->
             <section id="view-dashboard" class="space-y-6">
-                <!-- Daily Progress Overview Card -->
-                <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-xl relative overflow-hidden">
-                    <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <!-- Summary Card -->
+                <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 border border-slate-800/90 rounded-2xl p-5 shadow-2xl relative overflow-hidden">
+                    <div class="absolute -right-10 -bottom-10 w-44 h-44 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
                         <div>
-                            <h2 class="text-lg font-bold text-white flex items-center gap-2">Progreso de Hoy</h2>
-                            <p class="text-xs text-slate-400" id="progress-subtitle">0 de 0 micro-rutinas completadas</p>
+                            <h2 class="text-lg font-bold text-white flex items-center gap-2">Módulo 3: Crecimiento Continuo KAIZEN</h2>
+                            <p class="text-xs text-slate-400" id="progress-subtitle">0 de 0 rutinas activas completadas</p>
                         </div>
                         <div class="text-right flex items-baseline gap-1">
                             <span id="daily-progress-percent" class="text-3xl font-extrabold text-emerald-400">0%</span>
-                            <span class="text-xs text-slate-500">completado</span>
+                            <span class="text-xs text-slate-500">cumplido</span>
                         </div>
                     </div>
 
-                    <!-- Progress Bar -->
-                    <div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden p-0.5 border border-slate-700/50">
-                        <div id="daily-progress-bar" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-500 ease-out" style="width: 0%"></div>
+                    <div class="w-full bg-slate-950 h-3 rounded-full overflow-hidden p-0.5 border border-slate-800">
+                        <div id="daily-progress-bar" class="bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 h-full rounded-full transition-all duration-500 ease-out" style="width: 0%"></div>
                     </div>
 
-                    <!-- Quick Stats Row -->
                     <div class="grid grid-cols-3 gap-3 mt-4 pt-4 border-t border-slate-800/80 text-center">
-                        <div class="bg-slate-950/40 p-2.5 rounded-xl border border-slate-800/50">
-                            <span class="block text-xs text-slate-400">Racha Actual</span>
-                            <span id="stat-current-streak" class="text-base font-bold text-slate-200">0 días 🔥</span>
+                        <div class="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/50">
+                            <span class="block text-[11px] text-slate-400">Racha Actual</span>
+                            <span id="stat-current-streak" class="text-sm font-bold text-slate-200">0 días 🔥</span>
                         </div>
-                        <div class="bg-slate-950/40 p-2.5 rounded-xl border border-slate-800/50">
-                            <span class="block text-xs text-slate-400">Victorias Hoy</span>
-                            <span id="stat-today-victories" class="text-base font-bold text-amber-400">0 🏆</span>
+                        <div class="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/50">
+                            <span class="block text-[11px] text-slate-400">Victorias Hoy</span>
+                            <span id="stat-today-victories" class="text-sm font-bold text-amber-400">0 🏆</span>
                         </div>
-                        <div class="bg-slate-950/40 p-2.5 rounded-xl border border-slate-800/50">
-                            <span class="block text-xs text-slate-400">Promedio Semanal</span>
-                            <span id="stat-weekly-avg" class="text-base font-bold text-emerald-400">0%</span>
+                        <div class="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/50">
+                            <span class="block text-[11px] text-slate-400">Promedio Semanal</span>
+                            <span id="stat-weekly-avg" class="text-sm font-bold text-emerald-400">0%</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Micro-rutinas Fijas por Categorías -->
+                <!-- Micro-Rutinas Fijas -->
                 <div class="space-y-4">
                     <div class="flex items-center justify-between">
                         <h3 class="text-md font-bold text-slate-200 tracking-wide flex items-center gap-2">
                             <i class="fa-solid fa-list-check text-emerald-400"></i> Micro-Rutinas Fijas
                         </h3>
-                        <button onclick="openAddHabitModal()" class="tap-effect text-xs px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-lg font-medium flex items-center gap-1">
+                        <button onclick="openAddHabitModal()" class="tap-effect text-xs px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-xl font-semibold flex items-center gap-1.5">
                             <i class="fa-solid fa-plus"></i> Nueva Rutina
                         </button>
                     </div>
 
                     <div id="habits-container" class="space-y-6">
-                        <!-- Dynamic Category Groups -->
+                        <!-- Renderizado dinámico -->
                     </div>
                 </div>
             </section>
 
-            <!-- TAB 2: LOG DE VICTORIAS -->
+            <!-- VISTA: VICTORIAS / LOG EXTRA -->
             <section id="view-victories" class="space-y-6 hidden">
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center shadow-xl relative overflow-hidden">
-                    <h2 class="text-md font-semibold text-slate-300 mb-1">Micro-tasks fuera de rutina</h2>
+                    <h2 class="text-md font-semibold text-slate-300 mb-1">Micro-tareas fuera de rutina</h2>
                     <p class="text-xs text-slate-400 mb-4">Suma acciones imprevistas que aportan valor a tu día</p>
 
                     <div class="flex items-center justify-center gap-6 my-2">
                         <button onclick="decrementVictoryCount()" class="tap-effect w-12 h-12 rounded-full bg-slate-800 border border-slate-700 text-slate-300 text-xl flex items-center justify-center hover:bg-slate-700">
                             <i class="fa-solid fa-minus"></i>
                         </button>
-                        <div id="victory-counter-badge" class="w-24 h-24 rounded-2xl bg-gradient-to-tr from-amber-500/20 to-orange-500/10 border-2 border-amber-500/40 flex flex-col items-center justify-center shadow-lg shadow-amber-500/10">
+                        <div class="w-24 h-24 rounded-2xl bg-gradient-to-tr from-amber-500/20 to-orange-500/10 border-2 border-amber-500/40 flex flex-col items-center justify-center shadow-lg shadow-amber-500/10">
                             <span id="victory-count-num" class="text-4xl font-extrabold text-amber-400">0</span>
                             <span class="text-[10px] uppercase font-bold text-amber-500/80 tracking-wider">Hoy</span>
                         </div>
@@ -201,10 +263,10 @@
 
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg">
                     <h3 class="text-sm font-bold text-slate-200 mb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-pen-to-square text-amber-400"></i> Registrar Logro o Micro-Tarea
+                        <i class="fa-solid fa-pen-to-square text-amber-400"></i> Registrar Logro o Tarea Extra
                     </h3>
                     <form onsubmit="handleVictorySubmit(event)" class="flex gap-2">
-                        <input type="text" id="victory-input" placeholder="Ej: Pagué factura de servicios / Leí informe de 2 pág..." required class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500">
+                        <input type="text" id="victory-input" placeholder="Ej: Firmé contrato de servicios / Leí un paper clave..." required class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500">
                         <button type="submit" class="tap-effect px-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-sm flex items-center gap-1 shadow-md shadow-amber-500/10">
                             <i class="fa-solid fa-plus"></i> <span class="hidden sm:inline">Guardar</span>
                         </button>
@@ -216,41 +278,28 @@
                         <span><i class="fa-solid fa-clock-rotate-left text-slate-400 mr-2"></i>Historial de Logros</span>
                         <span id="victory-total-count" class="text-xs font-normal text-slate-500">0 registros</span>
                     </h3>
-                    <div id="victories-history-container" class="space-y-2">
-                        <!-- Dynamic Log Items -->
-                    </div>
+                    <div id="victories-history-container" class="space-y-2"></div>
                 </div>
             </section>
 
-            <!-- TAB 3: MÉTRICAS KAIZEN -->
+            <!-- VISTA: MÉTRICAS -->
             <section id="view-metrics" class="space-y-6 hidden">
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
                     <div class="flex items-center justify-between mb-4">
                         <div>
                             <h3 class="text-md font-bold text-slate-200 flex items-center gap-2">
-                                <i class="fa-solid fa-calendar-days text-emerald-400"></i> Matriz de Consistencia Kaizen
+                                <i class="fa-solid fa-calendar-days text-emerald-400"></i> Consistencia Global (Últimos 35 Días)
                             </h3>
-                            <p class="text-xs text-slate-400">Visualización de los últimos 35 días</p>
-                        </div>
-                        <div class="flex items-center gap-1 text-[10px] text-slate-400">
-                            <span>Menos</span>
-                            <span class="w-3 h-3 rounded bg-slate-800 inline-block"></span>
-                            <span class="w-3 h-3 rounded bg-emerald-950 inline-block"></span>
-                            <span class="w-3 h-3 rounded bg-emerald-700 inline-block"></span>
-                            <span class="w-3 h-3 rounded bg-emerald-500 inline-block"></span>
-                            <span>Más</span>
+                            <p class="text-xs text-slate-400">Matriz de cumplimiento de micro-rutinas</p>
                         </div>
                     </div>
-
-                    <div id="heatmap-grid" class="grid grid-cols-7 gap-2 pt-2">
-                        <!-- Rendered via JS -->
-                    </div>
+                    <div id="heatmap-grid" class="grid grid-cols-7 gap-2 pt-2"></div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
                         <h4 class="text-sm font-bold text-slate-300 mb-3 flex items-center gap-2">
-                            <i class="fa-solid fa-fire text-orange-500"></i> Rachas de Consistencia
+                            <i class="fa-solid fa-fire text-orange-500"></i> Riqueza de Rachas
                         </h4>
                         <div class="space-y-3">
                             <div class="flex justify-between items-center bg-slate-950/60 p-3 rounded-xl border border-slate-800">
@@ -258,7 +307,7 @@
                                 <span id="metric-streak-current" class="text-lg font-bold text-orange-400">0 días</span>
                             </div>
                             <div class="flex justify-between items-center bg-slate-950/60 p-3 rounded-xl border border-slate-800">
-                                <span class="text-xs text-slate-400">Racha Máxima Histórica</span>
+                                <span class="text-xs text-slate-400">Máxima Histórica</span>
                                 <span id="metric-streak-max" class="text-lg font-bold text-amber-400">0 días</span>
                             </div>
                         </div>
@@ -266,74 +315,74 @@
 
                     <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
                         <h4 class="text-sm font-bold text-slate-300 mb-3 flex items-center gap-2">
-                            <i class="fa-solid fa-chart-simple text-teal-400"></i> Cumplimiento por Categoría
+                            <i class="fa-solid fa-chart-simple text-teal-400"></i> Cumplimiento por Área
                         </h4>
-                        <div id="category-metrics-list" class="space-y-2.5">
-                            <!-- Rendered dynamically -->
-                        </div>
+                        <div id="category-metrics-list" class="space-y-2.5"></div>
                     </div>
                 </div>
             </section>
 
-            <!-- TAB 4: CONFIGURACIÓN -->
+            <!-- VISTA: GESTIÓN DE ÁREAS Y AJUSTES -->
             <section id="view-settings" class="space-y-6 hidden">
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
                     <div class="flex items-center justify-between mb-4">
                         <div>
                             <h3 class="text-md font-bold text-slate-200 flex items-center gap-2">
-                                <i class="fa-solid fa-layer-group text-purple-400"></i> Gestión de Categorías
+                                <i class="fa-solid fa-layer-group text-purple-400"></i> Gestión Personalizada de Áreas de Vida
                             </h3>
-                            <p class="text-xs text-slate-400">Agrupa tus micro-rutinas según las áreas de tu vida</p>
+                            <p class="text-xs text-slate-400">Crea todas las áreas que necesites para agrupar metas y micro-rutinas.</p>
                         </div>
-                        <button onclick="openAddCategoryModal()" class="tap-effect text-xs px-3 py-1.5 bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 border border-purple-500/30 rounded-lg font-medium">
-                            <i class="fa-solid fa-plus mr-1"></i> Nueva Categoría
+                        <button onclick="openAddCategoryModal()" class="tap-effect text-xs px-3.5 py-2 bg-purple-500 hover:bg-purple-400 text-slate-950 font-bold rounded-xl flex items-center gap-1.5 shadow-md shadow-purple-500/10">
+                            <i class="fa-solid fa-plus"></i> Nueva Área
                         </button>
                     </div>
 
-                    <div id="categories-manager-list" class="space-y-2">
-                        <!-- Rendered dynamically -->
-                    </div>
+                    <div id="categories-manager-list" class="space-y-2"></div>
                 </div>
 
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
                     <h3 class="text-md font-bold text-slate-200 mb-2 flex items-center gap-2">
-                        <i class="fa-solid fa-triangle-exclamation text-rose-500"></i> Mantenimiento de Datos
+                        <i class="fa-solid fa-triangle-exclamation text-rose-500"></i> Mantenimiento y Respaldo
                     </h3>
-                    <p class="text-xs text-slate-400 mb-4">Tus datos están seguros y guardados localmente en tu navegador.</p>
+                    <p class="text-xs text-slate-400 mb-4">Los datos se almacenan localmente en tu dispositivo con privacidad total.</p>
                     <div class="flex flex-wrap gap-3">
-                        <button onclick="exportData()" class="tap-effect text-xs px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl border border-slate-700">
-                            <i class="fa-solid fa-file-export mr-1"></i> Descargar Copia Backup (JSON)
+                        <button onclick="exportData()" class="tap-effect text-xs px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl border border-slate-700 font-semibold">
+                            <i class="fa-solid fa-file-export mr-1.5"></i> Descargar Copia Backup (JSON)
                         </button>
-                        <button onclick="confirmResetAll()" class="tap-effect text-xs px-4 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 rounded-xl font-medium">
-                            <i class="fa-solid fa-trash-can mr-1"></i> Reiniciar Datos a Fábrica
+                        <button onclick="confirmResetAll()" class="tap-effect text-xs px-4 py-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 rounded-xl font-semibold">
+                            <i class="fa-solid fa-trash-can mr-1.5"></i> Reiniciar Datos a Fábrica
                         </button>
                     </div>
                 </div>
             </section>
         </main>
 
-        <!-- Mobile Bottom Navigation Bar -->
-        <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 px-3 py-2 flex justify-around items-center z-40 shadow-2xl">
+        <!-- Navigation Bar (Mobile) -->
+        <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-slate-950/95 backdrop-blur-lg border-t border-slate-800/80 px-2 py-2 flex justify-around items-center z-40 shadow-2xl">
+            <button onclick="switchTab('foda')" id="mobile-tab-btn-foda" class="flex flex-col items-center gap-1 text-slate-400 py-1">
+                <i class="fa-solid fa-chess-board text-base"></i>
+                <span class="text-[10px] font-medium">1. FODA</span>
+            </button>
+            <button onclick="switchTab('smart')" id="mobile-tab-btn-smart" class="flex flex-col items-center gap-1 text-slate-400 py-1">
+                <i class="fa-solid fa-bullseye text-base"></i>
+                <span class="text-[10px] font-medium">2. SMART</span>
+            </button>
             <button onclick="switchTab('dashboard')" id="mobile-tab-btn-dashboard" class="flex flex-col items-center gap-1 text-emerald-400 py-1">
-                <i class="fa-solid fa-house text-lg"></i>
-                <span class="text-[10px] font-medium">Inicio</span>
+                <i class="fa-solid fa-bolt text-base"></i>
+                <span class="text-[10px] font-medium">3. KAIZEN</span>
             </button>
             <button onclick="switchTab('victories')" id="mobile-tab-btn-victories" class="flex flex-col items-center gap-1 text-slate-400 py-1">
-                <i class="fa-solid fa-trophy text-lg"></i>
+                <i class="fa-solid fa-trophy text-base"></i>
                 <span class="text-[10px] font-medium">Victorias</span>
             </button>
-            <button onclick="switchTab('metrics')" id="mobile-tab-btn-metrics" class="flex flex-col items-center gap-1 text-slate-400 py-1">
-                <i class="fa-solid fa-chart-line text-lg"></i>
-                <span class="text-[10px] font-medium">Métricas</span>
-            </button>
             <button onclick="switchTab('settings')" id="mobile-tab-btn-settings" class="flex flex-col items-center gap-1 text-slate-400 py-1">
-                <i class="fa-solid fa-sliders text-lg"></i>
-                <span class="text-[10px] font-medium">Ajustes</span>
+                <i class="fa-solid fa-layer-group text-base"></i>
+                <span class="text-[10px] font-medium">Áreas</span>
             </button>
         </nav>
     </div>
 
-    <!-- MODAL: AGREGAR / EDITAR HÁBITO -->
+    <!-- MODAL: CREAR / EDITAR MICRO-RUTINA -->
     <div id="modal-habit" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
             <div class="flex justify-between items-center border-b border-slate-800 pb-3">
@@ -345,14 +394,20 @@
                 <input type="hidden" id="habit-id">
 
                 <div>
-                    <label class="block text-xs font-medium text-slate-400 mb-1">Nombre del Micro-Paso</label>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Nombre de la Rutina</label>
                     <input type="text" id="habit-title" placeholder="Ej: Caminata enfocada, Grooming, Lectura" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-medium text-slate-400 mb-1">Categoría</label>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Área / Categoría</label>
                     <select id="habit-category" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
-                        <!-- Options dynamically populated -->
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Objetivo SMART Vinculado (Opcional)</label>
+                    <select id="habit-smart-link" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+                        <option value="">Sin vinculación directa</option>
                     </select>
                 </div>
 
@@ -360,7 +415,7 @@
                     <label class="block text-xs font-medium text-slate-400 mb-1">Tipo de Medición</label>
                     <select id="habit-type" onchange="toggleHabitTypeFields()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
                         <option value="boolean">Check Simple (Sí / No)</option>
-                        <option value="numeric">Meta Numérica / Tiempo (min, pág, reps)</option>
+                        <option value="numeric">Meta Numérica / Tiempo (min, págs, reps)</option>
                     </select>
                 </div>
 
@@ -371,12 +426,12 @@
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-slate-400 mb-1">Unidad</label>
-                        <input type="text" id="habit-unit" placeholder="min, págs, veces" value="min" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+                        <input type="text" id="habit-unit" placeholder="min, págs" value="min" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
                     </div>
                 </div>
 
                 <div class="flex justify-between items-center pt-2">
-                    <button type="button" id="btn-delete-habit" onclick="deleteCurrentHabit()" class="px-3 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-xl text-xs font-medium hidden">
+                    <button type="button" id="btn-delete-habit" onclick="deleteCurrentHabit()" class="px-3 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-xl text-xs font-semibold hidden">
                         <i class="fa-solid fa-trash mr-1"></i> Eliminar
                     </button>
                     <div class="flex gap-2 ml-auto">
@@ -388,65 +443,126 @@
         </div>
     </div>
 
-    <!-- MODAL: AGREGAR CATEGORÍA -->
+    <!-- MODAL: CREAR METAS SMART -->
+    <div id="modal-smart" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 class="text-md font-bold text-white">Nueva Meta SMART</h3>
+                <button onclick="closeSmartModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <form id="smart-form" onsubmit="saveSmartGoal(event)" class="space-y-4">
+                <input type="hidden" id="smart-id">
+
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Título de la Meta (S - Específica)</label>
+                    <input type="text" id="smart-title" placeholder="Ej: Publicar libro / Certificar posgrado" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Horizonte Temporal</label>
+                        <select id="smart-horizon" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+                            <option value="short">Corto Plazo (1-3 meses)</option>
+                            <option value="medium">Mediano Plazo (3-12 meses)</option>
+                            <option value="long">Largo Plazo (1-3 años)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Área de Vida</label>
+                        <select id="smart-category" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Criterio de Medición (M - Medible)</label>
+                    <input type="text" id="smart-measurable" placeholder="Ej: 10 capítulos escritos / 100% completado" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Relevancia y Enfoque (R - Relevante)</label>
+                    <textarea id="smart-relevant" rows="2" placeholder="¿Por qué es vital lograr esto ahora?" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"></textarea>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeSmartModal()" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl text-xs font-medium hover:bg-slate-700">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl text-xs font-bold">Guardar Meta</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: CREAR ÁREA / CATEGORÍA -->
     <div id="modal-category" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4">
             <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-                <h3 class="text-md font-bold text-white">Nueva Categoría</h3>
+                <h3 class="text-md font-bold text-white">Nueva Área de Vida</h3>
                 <button onclick="closeCategoryModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
 
             <form id="category-form" onsubmit="saveCategory(event)" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-medium text-slate-400 mb-1">Nombre de Categoría</label>
-                    <input type="text" id="category-name" placeholder="Ej: Trabajo, Espiritualidad..." required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-100 focus:outline-none focus:border-purple-500">
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Nombre del Área</label>
+                    <input type="text" id="category-name" placeholder="Ej: Trabajo, Estudio, Filosofía..." required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-100 focus:outline-none focus:border-purple-500">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-medium text-slate-400 mb-1">Icono (FontAwesome)</label>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Icono Representativo</label>
                     <select id="category-icon" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-100 focus:outline-none focus:border-purple-500">
                         <option value="fa-heart-pulse">❤️ Salud / Bienestar</option>
-                        <option value="fa-book">📚 Desarrollo / Aprendizaje</option>
+                        <option value="fa-brain">🧠 Mente / Filosofía</option>
+                        <option value="fa-book">📚 Estudio / Aprendizaje</option>
                         <option value="fa-wallet">💰 Finanzas / Gestión</option>
+                        <option value="fa-briefcase">💼 Trabajo / Profesional</option>
                         <option value="fa-paw">🐾 Cuidado / Mascotas / Hogar</option>
                         <option value="fa-dumbbell">🏋️ Deporte / Fitness</option>
-                        <option value="fa-briefcase">💼 Trabajo / Proyectos</option>
                         <option value="fa-star">⭐ General</option>
                     </select>
                 </div>
 
                 <div class="flex justify-end gap-2 pt-2">
                     <button type="button" onclick="closeCategoryModal()" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl text-xs font-medium hover:bg-slate-700">Cancelar</button>
-                    <button type="submit" class="px-4 py-2 bg-purple-500 hover:bg-purple-400 text-slate-950 rounded-xl text-xs font-bold">Crear Categoría</button>
+                    <button type="submit" class="px-4 py-2 bg-purple-500 hover:bg-purple-400 text-slate-950 rounded-xl text-xs font-bold">Crear Área</button>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
-        const STORAGE_KEY = 'kaizen_flow_app_data_v1';
+        const STORAGE_KEY = 'kaizen_flow_app_data_v2';
 
         let appState = {
             categories: [
                 { id: 'cat-1', name: 'Salud y Bienestar', icon: 'fa-heart-pulse' },
-                { id: 'cat-2', name: 'Desarrollo Personal', icon: 'fa-book' },
+                { id: 'cat-2', name: 'Desarrollo Personal', icon: 'fa-brain' },
                 { id: 'cat-3', name: 'Gestión y Finanzas', icon: 'fa-wallet' },
                 { id: 'cat-4', name: 'Cuidado y Hogar', icon: 'fa-paw' }
             ],
             habits: [
-                { id: 'hab-1', categoryId: 'cat-1', title: 'Caminar 10 min', type: 'numeric', target: 10, unit: 'min' },
-                { id: 'hab-2', categoryId: 'cat-4', title: 'Grooming / Cuidado La Peque', type: 'boolean' },
-                { id: 'hab-3', categoryId: 'cat-2', title: 'Lectura de 5 páginas', type: 'numeric', target: 5, unit: 'págs' },
-                { id: 'hab-4', categoryId: 'cat-3', title: 'Revisión financiera diaria', type: 'boolean' }
+                { id: 'hab-1', categoryId: 'cat-1', title: 'Caminata 10 min', type: 'numeric', target: 10, unit: 'min' },
+                { id: 'hab-2', categoryId: 'cat-4', title: 'Cuidado y atención La Peque', type: 'boolean' },
+                { id: 'hab-3', categoryId: 'cat-2', title: 'Lectura enfocada 5 páginas', type: 'numeric', target: 5, unit: 'págs' }
             ],
-            logs: {},
+            foda: {
+                strengths: ['Capacidad analítica', 'Disciplina de lectura'],
+                opportunities: ['Herramientas digitales', 'Acceso a bibliografía'],
+                weaknesses: ['Fatiga mental nocturna'],
+                threats: ['Interrupciones de agenda']
+            },
+            smartGoals: [],
+            dailyLogs: {}, 
             victories: []
         };
+
+        let currentSmartFilter = 'short';
 
         window.onload = function() {
             loadState();
             updateDateDisplay();
             renderDashboard();
+            renderFodaTab();
+            renderSmartTab();
             renderVictoriesTab();
             renderMetricsTab();
             renderSettingsTab();
@@ -461,8 +577,11 @@
             if (saved) {
                 try {
                     appState = JSON.parse(saved);
+                    if (!appState.foda) appState.foda = { strengths: [], opportunities: [], weaknesses: [], threats: [] };
+                    if (!appState.smartGoals) appState.smartGoals = [];
+                    if (!appState.dailyLogs) appState.dailyLogs = {};
                 } catch (e) {
-                    console.error('Error al cargar datos guardados', e);
+                    console.error('Error al cargar datos', e);
                 }
             }
         }
@@ -479,43 +598,40 @@
         }
 
         function switchTab(tabName) {
-            ['dashboard', 'victories', 'metrics', 'settings'].forEach(t => {
-                document.getElementById(`view-${t}`).classList.add('hidden');
+            ['dashboard', 'foda', 'smart', 'victories', 'metrics', 'settings'].forEach(t => {
+                const view = document.getElementById(`view-${t}`);
+                if (view) view.classList.add('hidden');
 
                 const btn = document.getElementById(`tab-btn-${t}`);
-                if(btn) {
-                    btn.className = 'nav-tab-btn flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50';
-                }
+                if (btn) btn.className = 'nav-tab-btn flex-1 py-2.5 px-3 rounded-xl text-xs font-medium transition-all duration-200 flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50';
 
                 const mBtn = document.getElementById(`mobile-tab-btn-${t}`);
-                if(mBtn) {
-                    mBtn.className = 'flex flex-col items-center gap-1 text-slate-400 py-1';
-                }
+                if (mBtn) mBtn.className = 'flex flex-col items-center gap-1 text-slate-400 py-1';
             });
 
-            document.getElementById(`view-${tabName}`).classList.remove('hidden');
+            const activeView = document.getElementById(`view-${tabName}`);
+            if (activeView) activeView.classList.remove('hidden');
 
             const activeBtn = document.getElementById(`tab-btn-${tabName}`);
-            if(activeBtn) {
-                activeBtn.className = 'nav-tab-btn flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 bg-emerald-500 text-slate-950 shadow-md';
-            }
+            if (activeBtn) activeBtn.className = 'nav-tab-btn flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-2 bg-emerald-500 text-slate-950 shadow-md';
 
             const activeMBtn = document.getElementById(`mobile-tab-btn-${tabName}`);
-            if(activeMBtn) {
-                activeMBtn.className = 'flex flex-col items-center gap-1 text-emerald-400 py-1';
-            }
+            if (activeMBtn) activeMBtn.className = 'flex flex-col items-center gap-1 text-emerald-400 py-1';
 
-            if(tabName === 'metrics') renderMetricsTab();
+            if (tabName === 'metrics') renderMetricsTab();
+            if (tabName === 'smart') renderSmartTab();
         }
 
+        /* --- MÓDULO 3: CRECIMIENTO CONTINUO KAIZEN --- */
         function renderDashboard() {
             const container = document.getElementById('habits-container');
             container.innerHTML = '';
 
             const todayKey = getTodayKey();
-            const todayLogs = appState.logs[todayKey] || {};
+            if (!appState.dailyLogs[todayKey]) appState.dailyLogs[todayKey] = {};
 
-            let totalHabits = appState.habits.length;
+            const todayData = appState.dailyLogs[todayKey];
+            let activeHabitCount = 0;
             let completedCount = 0;
 
             appState.categories.forEach(category => {
@@ -523,9 +639,9 @@
                 if (categoryHabits.length === 0) return;
 
                 const groupDiv = document.createElement('div');
-                groupDiv.className = 'bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-lg';
+                groupDiv.className = 'bg-slate-900 border border-slate-800/80 rounded-2xl p-4 shadow-xl';
 
-                let categoryHeaderHTML = `
+                let groupHTML = `
                     <div class="flex items-center gap-2 mb-3 pb-2 border-b border-slate-800 text-slate-300 font-bold text-sm">
                         <i class="fa-solid ${category.icon} text-emerald-400"></i>
                         <span>${category.name}</span>
@@ -533,112 +649,282 @@
                     <div class="space-y-2.5">
                 `;
 
-                let habitsHTML = '';
-
                 categoryHabits.forEach(habit => {
-                    const val = todayLogs[habit.id] || 0;
+                    const habitLog = todayData[habit.id] || { val: 0, paused: false };
+                    const isPaused = habitLog.paused;
                     let isDone = false;
 
-                    if (habit.type === 'boolean') {
-                        isDone = val === 1;
-                        if (isDone) completedCount++;
-                    } else {
-                        isDone = val >= habit.target;
+                    if (!isPaused) {
+                        activeHabitCount++;
+                        if (habit.type === 'boolean') {
+                            isDone = habitLog.val === 1;
+                        } else {
+                            isDone = habitLog.val >= habit.target;
+                        }
                         if (isDone) completedCount++;
                     }
 
-                    habitsHTML += `
-                        <div class="flex items-center justify-between bg-slate-950/60 border border-slate-800/80 rounded-xl p-3 hover:border-slate-700 transition-all">
+                    const smartLinked = appState.smartGoals.find(s => s.id === habit.smartId);
+
+                    groupHTML += `
+                        <div class="flex items-center justify-between bg-slate-950/70 border ${isPaused ? 'border-slate-800/40 opacity-50' : 'border-slate-800'} rounded-xl p-3 transition-all">
                             <div class="flex items-center gap-3">
-                                <button onclick="toggleHabitCheck('${habit.id}')" class="tap-effect w-8 h-8 rounded-lg flex items-center justify-center transition-all ${isDone ? 'bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20' : 'bg-slate-800 border border-slate-700 text-slate-500 hover:text-slate-300'}">
+                                <button onclick="toggleHabitCheck('${habit.id}')" ${isPaused ? 'disabled' : ''} class="tap-effect w-8 h-8 rounded-lg flex items-center justify-center transition-all ${isDone ? 'bg-emerald-500 text-slate-950 font-bold' : 'bg-slate-800 border border-slate-700 text-slate-500'}">
                                     <i class="fa-solid ${isDone ? 'fa-check' : 'fa-minus'} text-sm"></i>
                                 </button>
                                 <div>
                                     <div class="flex items-center gap-2">
-                                        <span class="text-sm font-medium ${isDone ? 'line-through text-slate-500' : 'text-slate-100'}">${habit.title}</span>
-                                        <button onclick="openEditHabitModal('${habit.id}')" title="Editar rutina" class="text-slate-500 hover:text-emerald-400 text-xs px-1">
+                                        <span class="text-xs sm:text-sm font-semibold ${isDone ? 'line-through text-slate-500' : 'text-slate-100'}">${habit.title}</span>
+                                        <button onclick="openEditHabitModal('${habit.id}')" class="text-slate-500 hover:text-emerald-400 text-xs px-1">
                                             <i class="fa-solid fa-pen"></i>
                                         </button>
                                     </div>
-                                    ${habit.type === 'numeric' ? `<span class="block text-[11px] text-slate-400">Progreso: ${val} / ${habit.target}${habit.unit}</span>` : ''}
+                                    <div class="flex flex-wrap items-center gap-2 mt-0.5">
+                                        ${habit.type === 'numeric' ? `<span class="text-[11px] text-slate-400">Progreso: ${habitLog.val} / ${habit.target} ${habit.unit}</span>` : ''}
+                                        ${smartLinked ? `<span class="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.2 rounded"><i class="fa-solid fa-bullseye mr-1"></i>${smartLinked.title}</span>` : ''}
+                                    </div>
                                 </div>
                             </div>
-                            ${habit.type === 'numeric' ? `
-                                <div class="flex items-center gap-1 bg-slate-900 border border-slate-800 rounded-lg p-1">
-                                    <button onclick="updateHabitValue('${habit.id}', -1)" class="tap-effect w-7 h-7 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold flex items-center justify-center">-</button>
-                                    <span class="text-xs font-bold w-6 text-center text-slate-200">${val}</span>
-                                    <button onclick="updateHabitValue('${habit.id}', 1)" class="tap-effect w-7 h-7 rounded bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold flex items-center justify-center">+</button>
-                                </div>
-                            ` : ''}
+
+                            <div class="flex items-center gap-2">
+                                ${habit.type === 'numeric' && !isPaused ? `
+                                    <div class="flex items-center gap-1 bg-slate-900 border border-slate-800 rounded-lg p-1">
+                                        <button onclick="updateHabitValue('${habit.id}', -1)" class="tap-effect w-6 h-6 rounded bg-slate-800 text-slate-300 text-xs font-bold flex items-center justify-center">-</button>
+                                        <span class="text-xs font-bold w-6 text-center text-slate-200">${habitLog.val}</span>
+                                        <button onclick="updateHabitValue('${habit.id}', 1)" class="tap-effect w-6 h-6 rounded bg-emerald-500 text-slate-950 text-xs font-bold flex items-center justify-center">+</button>
+                                    </div>
+                                ` : ''}
+
+                                <button onclick="togglePauseHabitToday('${habit.id}')" title="${isPaused ? 'Reactivar hoy' : 'Pausar solo por hoy'}" class="tap-effect px-2 py-1 rounded-lg border ${isPaused ? 'bg-amber-500/20 border-amber-500/40 text-amber-400' : 'bg-slate-900 border-slate-800 text-slate-500 hover:text-slate-300'} text-xs">
+                                    <i class="fa-solid ${isPaused ? 'fa-play' : 'fa-pause'}"></i>
+                                </button>
+                            </div>
                         </div>
                     `;
                 });
 
-                groupDiv.innerHTML = categoryHeaderHTML + habitsHTML + '</div>';
+                groupDiv.innerHTML = groupHTML + '</div>';
                 container.appendChild(groupDiv);
             });
 
-            const percent = totalHabits > 0 ? Math.round((completedCount / totalHabits) * 100) : 0;
+            const percent = activeHabitCount > 0 ? Math.round((completedCount / activeHabitCount) * 100) : 0;
             document.getElementById('daily-progress-percent').textContent = `${percent}%`;
             document.getElementById('daily-progress-bar').style.width = `${percent}%`;
-            document.getElementById('progress-subtitle').textContent = `${completedCount} de ${totalHabits} micro-rutinas completadas hoy`;
+            document.getElementById('progress-subtitle').textContent = `${completedCount} de ${activeHabitCount} micro-rutinas activas completadas hoy`;
 
-            const currentStreak = calculateCurrentStreak();
-            document.getElementById('stat-current-streak').textContent = `${currentStreak} días 🔥`;
-
+            document.getElementById('stat-current-streak').textContent = `${calculateCurrentStreak()} días 🔥`;
             const todayVictories = (appState.victories.find(v => v.date === todayKey) || {}).count || 0;
             document.getElementById('stat-today-victories').textContent = `${todayVictories} 🏆`;
-
             document.getElementById('stat-weekly-avg').textContent = `${calculateWeeklyAverage()}%`;
         }
 
         function toggleHabitCheck(habitId) {
             const todayKey = getTodayKey();
-            if (!appState.logs[todayKey]) appState.logs[todayKey] = {};
+            if (!appState.dailyLogs[todayKey]) appState.dailyLogs[todayKey] = {};
 
             const habit = appState.habits.find(h => h.id === habitId);
             if (!habit) return;
 
+            const current = appState.dailyLogs[todayKey][habitId] || { val: 0, paused: false };
             if (habit.type === 'boolean') {
-                appState.logs[todayKey][habitId] = appState.logs[todayKey][habitId] === 1 ? 0 : 1;
+                current.val = current.val === 1 ? 0 : 1;
             } else {
-                const currentVal = appState.logs[todayKey][habitId] || 0;
-                appState.logs[todayKey][habitId] = currentVal >= habit.target ? 0 : habit.target;
+                current.val = current.val >= habit.target ? 0 : habit.target;
             }
 
+            appState.dailyLogs[todayKey][habitId] = current;
             saveState();
             renderDashboard();
         }
 
         function updateHabitValue(habitId, delta) {
             const todayKey = getTodayKey();
-            if (!appState.logs[todayKey]) appState.logs[todayKey] = {};
+            if (!appState.dailyLogs[todayKey]) appState.dailyLogs[todayKey] = {};
 
-            const currentVal = appState.logs[todayKey][habitId] || 0;
-            const newVal = Math.max(0, currentVal + delta);
+            const current = appState.dailyLogs[todayKey][habitId] || { val: 0, paused: false };
+            current.val = Math.max(0, current.val + delta);
 
-            appState.logs[todayKey][habitId] = newVal;
-
+            appState.dailyLogs[todayKey][habitId] = current;
             saveState();
             renderDashboard();
         }
 
+        function togglePauseHabitToday(habitId) {
+            const todayKey = getTodayKey();
+            if (!appState.dailyLogs[todayKey]) appState.dailyLogs[todayKey] = {};
+
+            const current = appState.dailyLogs[todayKey][habitId] || { val: 0, paused: false };
+            current.paused = !current.paused;
+
+            appState.dailyLogs[todayKey][habitId] = current;
+            saveState();
+            renderDashboard();
+        }
+
+        /* --- MÓDULO 1: DIAGNÓSTICO FODA --- */
+        function renderFodaTab() {
+            ['strengths', 'opportunities', 'weaknesses', 'threats'].forEach(quad => {
+                const container = document.getElementById(`foda-${quad}-list`);
+                container.innerHTML = '';
+
+                (appState.foda[quad] || []).forEach((item, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'flex items-center justify-between bg-slate-900 border border-slate-800/80 px-3 py-1.5 rounded-xl text-xs text-slate-200';
+                    div.innerHTML = `
+                        <span>${item}</span>
+                        <button onclick="removeFodaItem('${quad}', ${index})" class="text-slate-600 hover:text-rose-400 p-1"><i class="fa-solid fa-xmark"></i></button>
+                    `;
+                    container.appendChild(div);
+                });
+            });
+        }
+
+        function addFodaItem(quad) {
+            const text = prompt('Añadir ítem al cuadrante:');
+            if (text && text.trim()) {
+                if (!appState.foda[quad]) appState.foda[quad] = [];
+                appState.foda[quad].push(text.trim());
+                saveState();
+                renderFodaTab();
+            }
+        }
+
+        function removeFodaItem(quad, index) {
+            appState.foda[quad].splice(index, 1);
+            saveState();
+            renderFodaTab();
+        }
+
+        /* --- MÓDULO 2: ESTRUCTURA Y ENFOQUE SMART --- */
+        function renderSmartTab() {
+            const container = document.getElementById('smart-goals-container');
+            container.innerHTML = '';
+
+            const filtered = appState.smartGoals.filter(s => s.horizon === currentSmartFilter);
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="text-center py-8 text-xs text-slate-500">No hay metas declaradas para este horizonte. ¡Añade tu primera meta SMART!</div>`;
+                return;
+            }
+
+            filtered.forEach(goal => {
+                const category = appState.categories.find(c => c.id === goal.categoryId) || { name: 'General', icon: 'fa-star' };
+                const linkedHabits = appState.habits.filter(h => h.smartId === goal.id);
+
+                const card = document.createElement('div');
+                card.className = 'bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-lg space-y-3';
+                card.innerHTML = `
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-[10px] uppercase font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                                    <i class="fa-solid ${category.icon} mr-1"></i>${category.name}
+                                </span>
+                            </div>
+                            <h3 class="text-sm font-bold text-white">${goal.title}</h3>
+                        </div>
+                        <button onclick="deleteSmartGoal('${goal.id}')" class="text-slate-600 hover:text-rose-400 text-xs p-1"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs bg-slate-950/60 p-3 rounded-xl border border-slate-800">
+                        <div>
+                            <span class="block text-[10px] text-slate-500 font-bold uppercase">Medición (SMART-M)</span>
+                            <span class="text-slate-300 font-medium">${goal.measurable}</span>
+                        </div>
+                        <div>
+                            <span class="block text-[10px] text-slate-500 font-bold uppercase">Enfoque (SMART-R)</span>
+                            <span class="text-slate-300 font-medium">${goal.relevant || 'Sin especificar'}</span>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center pt-1 text-xs">
+                        <span class="text-slate-400"><i class="fa-solid fa-link text-emerald-400 mr-1.5"></i>${linkedHabits.length} micro-rutinas vinculadas</span>
+                        <button onclick="openAddHabitForSmart('${goal.id}', '${goal.categoryId}')" class="text-emerald-400 hover:text-emerald-300 text-xs font-semibold">+ Crear Rutina Vinculada</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function filterSmartHorizon(horizon) {
+            currentSmartFilter = horizon;
+            ['short', 'medium', 'long'].forEach(h => {
+                const btn = document.getElementById(`smart-horizon-btn-${h}`);
+                if (h === horizon) {
+                    btn.className = 'py-2 text-xs font-bold rounded-lg bg-emerald-500 text-slate-950';
+                } else {
+                    btn.className = 'py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-slate-200';
+                }
+            });
+            renderSmartTab();
+        }
+
+        function openAddSmartModal() {
+            document.getElementById('smart-id').value = '';
+            document.getElementById('smart-title').value = '';
+            document.getElementById('smart-measurable').value = '';
+            document.getElementById('smart-relevant').value = '';
+
+            const selectCat = document.getElementById('smart-category');
+            selectCat.innerHTML = '';
+            appState.categories.forEach(c => {
+                selectCat.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+            });
+
+            document.getElementById('modal-smart').classList.remove('hidden');
+        }
+
+        function closeSmartModal() {
+            document.getElementById('modal-smart').classList.add('hidden');
+        }
+
+        function saveSmartGoal(e) {
+            e.preventDefault();
+            const id = document.getElementById('smart-id').value || 'smart-' + Date.now();
+            const title = document.getElementById('smart-title').value.trim();
+            const horizon = document.getElementById('smart-horizon').value;
+            const categoryId = document.getElementById('smart-category').value;
+            const measurable = document.getElementById('smart-measurable').value.trim();
+            const relevant = document.getElementById('smart-relevant').value.trim();
+
+            const newGoal = { id, title, horizon, categoryId, measurable, relevant };
+            const existingIndex = appState.smartGoals.findIndex(s => s.id === id);
+
+            if (existingIndex >= 0) {
+                appState.smartGoals[existingIndex] = newGoal;
+            } else {
+                appState.smartGoals.push(newGoal);
+            }
+
+            saveState();
+            closeSmartModal();
+            renderSmartTab();
+        }
+
+        function deleteSmartGoal(id) {
+            if (confirm('¿Eliminar esta meta SMART?')) {
+                appState.smartGoals = appState.smartGoals.filter(s => s.id !== id);
+                saveState();
+                renderSmartTab();
+            }
+        }
+
+        /* --- VISTA: VICTORIAS --- */
         function renderVictoriesTab() {
             const todayKey = getTodayKey();
             const todayEntry = appState.victories.find(v => v.date === todayKey) || { count: 0 };
-
             document.getElementById('victory-count-num').textContent = todayEntry.count || 0;
 
             const container = document.getElementById('victories-history-container');
             container.innerHTML = '';
 
             if (appState.victories.length === 0) {
-                container.innerHTML = '<div class="text-center py-6 text-xs text-slate-500">Aún no registraste micro-victorias. ¡Suma tu primer logro hoy!</div>';
+                container.innerHTML = '<div class="text-center py-6 text-xs text-slate-500">Sin victorias registradas aún.</div>';
                 return;
             }
 
             const sorted = [...appState.victories].sort((a, b) => b.date.localeCompare(a.date));
-            document.getElementById('victory-total-count').textContent = `${sorted.length} entradas`;
+            document.getElementById('victory-total-count').textContent = `${sorted.length} registros`;
 
             sorted.forEach(item => {
                 const div = document.createElement('div');
@@ -649,11 +935,9 @@
                             <span class="text-xs font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">${item.date}</span>
                             <span class="text-xs font-semibold text-slate-300">+${item.count} victorias</span>
                         </div>
-                        <p class="text-xs text-slate-400 font-medium">${item.note || 'Sin nota adjunta'}</p>
+                        <p class="text-xs text-slate-400 font-medium">${item.note || 'Sin detalles'}</p>
                     </div>
-                    <button onclick="deleteVictoryEntry('${item.id}')" class="text-slate-600 hover:text-rose-400 text-xs p-1">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
+                    <button onclick="deleteVictoryEntry('${item.id}')" class="text-slate-600 hover:text-rose-400 text-xs p-1"><i class="fa-solid fa-trash"></i></button>
                 `;
                 container.appendChild(div);
             });
@@ -662,14 +946,12 @@
         function incrementVictoryCount() {
             const todayKey = getTodayKey();
             let entry = appState.victories.find(v => v.date === todayKey);
-
             if (!entry) {
                 entry = { id: 'vic-' + Date.now(), date: todayKey, count: 1, note: '' };
                 appState.victories.push(entry);
             } else {
                 entry.count += 1;
             }
-
             saveState();
             renderVictoriesTab();
             renderDashboard();
@@ -678,7 +960,6 @@
         function decrementVictoryCount() {
             const todayKey = getTodayKey();
             let entry = appState.victories.find(v => v.date === todayKey);
-
             if (entry && entry.count > 0) {
                 entry.count -= 1;
                 saveState();
@@ -717,6 +998,7 @@
             renderDashboard();
         }
 
+        /* --- VISTA: MÉTRICAS --- */
         function renderMetricsTab() {
             const grid = document.getElementById('heatmap-grid');
             grid.innerHTML = '';
@@ -729,36 +1011,36 @@
                 d.setDate(d.getDate() - i);
                 const dateStr = d.toISOString().split('T')[0];
 
-                const logs = appState.logs[dateStr] || {};
+                const logs = appState.dailyLogs[dateStr] || {};
                 let done = 0;
-                let total = appState.habits.length;
+                let totalActive = 0;
 
                 appState.habits.forEach(h => {
-                    const val = logs[h.id] || 0;
-                    if (h.type === 'boolean' && val === 1) done++;
-                    if (h.type === 'numeric' && val >= h.target) done++;
+                    const habitLog = logs[h.id] || { val: 0, paused: false };
+                    if (!habitLog.paused) {
+                        totalActive++;
+                        if ((h.type === 'boolean' && habitLog.val === 1) || (h.type === 'numeric' && habitLog.val >= h.target)) {
+                            done++;
+                        }
+                    }
                 });
 
-                const ratio = total > 0 ? done / total : 0;
+                const ratio = totalActive > 0 ? done / totalActive : 0;
 
-                let colorClass = 'bg-slate-800 border-slate-700/50';
+                let colorClass = 'bg-slate-900 border-slate-800 text-slate-600';
                 if (ratio > 0 && ratio <= 0.33) colorClass = 'bg-emerald-950 border-emerald-800/50 text-emerald-300';
                 else if (ratio > 0.33 && ratio <= 0.75) colorClass = 'bg-emerald-700 border-emerald-600 text-emerald-100';
                 else if (ratio > 0.75) colorClass = 'bg-emerald-500 border-emerald-400 text-slate-950 font-bold';
 
-                const dayNum = d.getDate();
                 const cell = document.createElement('div');
                 cell.className = `heatmap-cell rounded-lg border flex flex-col items-center justify-center text-[10px] p-1 ${colorClass}`;
-                cell.title = `${dateStr}: ${done}/${total} (${Math.round(ratio*100)}%)`;
-                cell.innerHTML = `<span>${dayNum}</span>`;
-
+                cell.title = `${dateStr}: ${done}/${totalActive} (${Math.round(ratio*100)}%)`;
+                cell.innerHTML = `<span>${d.getDate()}</span>`;
                 grid.appendChild(cell);
             }
 
-            const currentStreak = calculateCurrentStreak();
-            const maxStreak = calculateMaxStreak();
-            document.getElementById('metric-streak-current').textContent = `${currentStreak} días`;
-            document.getElementById('metric-streak-max').textContent = `${maxStreak} días`;
+            document.getElementById('metric-streak-current').textContent = `${calculateCurrentStreak()} días`;
+            document.getElementById('metric-streak-max').textContent = `${calculateMaxStreak()} días`;
 
             const catList = document.getElementById('category-metrics-list');
             catList.innerHTML = '';
@@ -787,14 +1069,19 @@
                 d.setDate(d.getDate() - i);
                 const dateStr = d.toISOString().split('T')[0];
 
-                const logs = appState.logs[dateStr] || {};
+                const logs = appState.dailyLogs[dateStr] || {};
                 let done = 0;
+                let active = 0;
+
                 appState.habits.forEach(h => {
-                    const val = logs[h.id] || 0;
-                    if ((h.type === 'boolean' && val === 1) || (h.type === 'numeric' && val >= h.target)) done++;
+                    const habitLog = logs[h.id] || { val: 0, paused: false };
+                    if (!habitLog.paused) {
+                        active++;
+                        if ((h.type === 'boolean' && habitLog.val === 1) || (h.type === 'numeric' && habitLog.val >= h.target)) done++;
+                    }
                 });
 
-                if (appState.habits.length > 0 && (done / appState.habits.length) >= 0.5) {
+                if (active > 0 && (done / active) >= 0.5) {
                     streak++;
                 } else if (i === 0) {
                     continue;
@@ -812,24 +1099,31 @@
         function calculateWeeklyAverage() {
             let totalRatios = 0;
             const today = new Date();
+
             for (let i = 0; i < 7; i++) {
                 const d = new Date(today);
                 d.setDate(d.getDate() - i);
                 const dateStr = d.toISOString().split('T')[0];
 
-                const logs = appState.logs[dateStr] || {};
+                const logs = appState.dailyLogs[dateStr] || {};
                 let done = 0;
+                let active = 0;
+
                 appState.habits.forEach(h => {
-                    const val = logs[h.id] || 0;
-                    if ((h.type === 'boolean' && val === 1) || (h.type === 'numeric' && val >= h.target)) done++;
+                    const habitLog = logs[h.id] || { val: 0, paused: false };
+                    if (!habitLog.paused) {
+                        active++;
+                        if ((h.type === 'boolean' && habitLog.val === 1) || (h.type === 'numeric' && habitLog.val >= h.target)) done++;
+                    }
                 });
 
-                const ratio = appState.habits.length > 0 ? done / appState.habits.length : 0;
+                const ratio = active > 0 ? done / active : 0;
                 totalRatios += ratio;
             }
             return Math.round((totalRatios / 7) * 100);
         }
 
+        /* --- VISTA: GESTIÓN DE ÁREAS Y AJUSTES --- */
         function renderSettingsTab() {
             const container = document.getElementById('categories-manager-list');
             container.innerHTML = '';
@@ -844,9 +1138,7 @@
                         <span class="font-medium text-slate-200">${cat.name}</span>
                         <span class="text-[10px] text-slate-500">(${habitCount} hábitos)</span>
                     </div>
-                    <button onclick="deleteCategory('${cat.id}')" class="text-slate-600 hover:text-rose-400 p-1">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
+                    <button onclick="deleteCategory('${cat.id}')" class="text-slate-600 hover:text-rose-400 p-1"><i class="fa-solid fa-trash"></i></button>
                 `;
                 container.appendChild(div);
             });
@@ -857,6 +1149,12 @@
             select.innerHTML = '';
             appState.categories.forEach(c => {
                 select.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+            });
+
+            const smartSelect = document.getElementById('habit-smart-link');
+            smartSelect.innerHTML = '<option value="">Sin vinculación directa</option>';
+            appState.smartGoals.forEach(s => {
+                smartSelect.innerHTML += `<option value="${s.id}">${s.title}</option>`;
             });
         }
 
@@ -871,8 +1169,13 @@
 
             populateCategoryOptions();
             toggleHabitTypeFields();
-
             document.getElementById('modal-habit').classList.remove('hidden');
+        }
+
+        function openAddHabitForSmart(smartId, categoryId) {
+            openAddHabitModal();
+            document.getElementById('habit-category').value = categoryId;
+            document.getElementById('habit-smart-link').value = smartId;
         }
 
         function openEditHabitModal(habitId) {
@@ -885,6 +1188,7 @@
 
             populateCategoryOptions();
             document.getElementById('habit-category').value = habit.categoryId;
+            document.getElementById('habit-smart-link').value = habit.smartId || '';
 
             document.getElementById('habit-type').value = habit.type || 'boolean';
             document.getElementById('habit-target').value = habit.target || 10;
@@ -892,20 +1196,7 @@
             document.getElementById('btn-delete-habit').classList.remove('hidden');
 
             toggleHabitTypeFields();
-
             document.getElementById('modal-habit').classList.remove('hidden');
-        }
-
-        function deleteCurrentHabit() {
-            const habitId = document.getElementById('habit-id').value;
-            if (!habitId) return;
-
-            if (confirm('¿Estás seguro de eliminar esta micro-rutina?')) {
-                appState.habits = appState.habits.filter(h => h.id !== habitId);
-                saveState();
-                closeHabitModal();
-                renderDashboard();
-            }
         }
 
         function closeHabitModal() {
@@ -927,12 +1218,13 @@
             const id = document.getElementById('habit-id').value || 'hab-' + Date.now();
             const title = document.getElementById('habit-title').value.trim();
             const categoryId = document.getElementById('habit-category').value;
+            const smartId = document.getElementById('habit-smart-link').value || null;
             const type = document.getElementById('habit-type').value;
             const target = parseInt(document.getElementById('habit-target').value) || 1;
             const unit = document.getElementById('habit-unit').value.trim() || 'unid';
 
             const existingIndex = appState.habits.findIndex(h => h.id === id);
-            const newHabit = { id, title, categoryId, type, target, unit };
+            const newHabit = { id, title, categoryId, smartId, type, target, unit };
 
             if (existingIndex >= 0) {
                 appState.habits[existingIndex] = newHabit;
@@ -943,6 +1235,18 @@
             saveState();
             closeHabitModal();
             renderDashboard();
+        }
+
+        function deleteCurrentHabit() {
+            const habitId = document.getElementById('habit-id').value;
+            if (!habitId) return;
+
+            if (confirm('¿Eliminar esta micro-rutina del sistema?')) {
+                appState.habits = appState.habits.filter(h => h.id !== habitId);
+                saveState();
+                closeHabitModal();
+                renderDashboard();
+            }
         }
 
         function openAddCategoryModal() {
@@ -960,12 +1264,7 @@
 
             if (!name) return;
 
-            appState.categories.push({
-                id: 'cat-' + Date.now(),
-                name,
-                icon
-            });
-
+            appState.categories.push({ id: 'cat-' + Date.now(), name, icon });
             saveState();
             closeCategoryModal();
             renderSettingsTab();
@@ -974,21 +1273,24 @@
 
         function deleteCategory(catId) {
             if (appState.categories.length <= 1) {
-                alert('Debes mantener al menos una categoría activa.');
+                alert('Debes mantener al menos un área activa.');
                 return;
             }
-            appState.categories = appState.categories.filter(c => c.id !== catId);
-            appState.habits = appState.habits.filter(h => h.categoryId !== catId);
-            saveState();
-            renderSettingsTab();
-            renderDashboard();
+            if (confirm('¿Eliminar esta área y todas sus rutinas asociadas?')) {
+                appState.categories = appState.categories.filter(c => c.id !== catId);
+                appState.habits = appState.habits.filter(h => h.categoryId !== catId);
+                saveState();
+                renderSettingsTab();
+                renderDashboard();
+            }
         }
 
+        /* --- EXPORTAR / IMPORTAR BACKUP --- */
         function exportData() {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
             const downloadAnchor = document.createElement('a');
             downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", `kaizen_flow_backup_${getTodayKey()}.json`);
+            downloadAnchor.setAttribute("download", `kaizen_flow_fsk_backup_${getTodayKey()}.json`);
             document.body.appendChild(downloadAnchor);
             downloadAnchor.click();
             downloadAnchor.remove();
@@ -1014,18 +1316,18 @@
                         alert('Formato de archivo JSON no válido.');
                     }
                 } catch (err) {
-                    alert('Error al leer el archivo de copia de seguridad.');
+                    alert('Error al leer la copia de seguridad.');
                 }
             };
             reader.readAsText(file);
         }
 
         function confirmResetAll() {
-            if (confirm('¿Estás seguro de reiniciar todos los datos? Esta acción eliminará tu historial actual.')) {
+            if (confirm('¿Reiniciar todos los datos? Esta acción eliminará todo tu progreso registrado.')) {
                 localStorage.removeItem(STORAGE_KEY);
                 location.reload();
             }
         }
     </script>
-</body>                  
+</body>
 </html>
